@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 42;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -1977,7 +1977,7 @@
 		6EA049BD09E57D5F0067589C /* NSNotificationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E2803F609747BAA00EC542B /* NSNotificationQueue.m */; };
 		6EA049BE09E57D5F0067589C /* NSNumber_BOOL.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E2803FD09747BB300EC542B /* NSNumber_BOOL.m */; };
 		6EA049BF09E57D5F0067589C /* NSNumber_char.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E2803FF09747BB300EC542B /* NSNumber_char.m */; };
-		6EA049C009E57D5F0067589C /* NSNumber_double.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E28040109747BB300EC542B /* NSNumber_double.m */; };
+		6EA049C009E57D5F0067589C /* NSNumber_double.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E28040109747BB300EC542B /* NSNumber_double.m */; settings = {COMPILER_FLAGS = "-std=gnu99"; }; };
 		6EA049C109E57D5F0067589C /* NSNumber_float.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E28040309747BB300EC542B /* NSNumber_float.m */; };
 		6EA049C209E57D5F0067589C /* NSNumber_int.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E28040509747BB300EC542B /* NSNumber_int.m */; };
 		6EA049C309E57D5F0067589C /* NSNumber_long.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E28040709747BB300EC542B /* NSNumber_long.m */; };
@@ -1989,7 +1989,7 @@
 		6EA049C909E57D5F0067589C /* NSNumber_unsignedLong.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E28041309747BB300EC542B /* NSNumber_unsignedLong.m */; };
 		6EA049CA09E57D5F0067589C /* NSNumber_unsignedLongLong.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E28041509747BB300EC542B /* NSNumber_unsignedLongLong.m */; };
 		6EA049CB09E57D5F0067589C /* NSNumber_unsignedShort.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E28041709747BB300EC542B /* NSNumber_unsignedShort.m */; };
-		6EA049CC09E57D5F0067589C /* NSNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E28041909747BB300EC542B /* NSNumber.m */; };
+		6EA049CC09E57D5F0067589C /* NSNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E28041909747BB300EC542B /* NSNumber.m */; settings = {COMPILER_FLAGS = "-std=gnu99"; }; };
 		6EA049CD09E57D5F0067589C /* NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E28043909747BBE00EC542B /* NSObject.m */; };
 		6EA049CF09E57D5F0067589C /* NSZombieObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E28043C09747BBE00EC542B /* NSZombieObject.m */; };
 		6EA049D009E57D5F0067589C /* NSPropertyListReader_vintage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E28044309747BCB00EC542B /* NSPropertyListReader_vintage.m */; };
@@ -2022,7 +2022,7 @@
 		6EA049EF09E57D5F0067589C /* NSString_placeholder.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E2804A509747BF800EC542B /* NSString_placeholder.m */; };
 		6EA049F009E57D5F0067589C /* NSString.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E2804A709747BF800EC542B /* NSString.m */; };
 		6EA049F109E57D5F0067589C /* NSStringFileIO.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E2804A909747BF800EC542B /* NSStringFileIO.m */; };
-		6EA049F209E57D5F0067589C /* NSStringFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E2804AB09747BF800EC542B /* NSStringFormatter.m */; };
+		6EA049F209E57D5F0067589C /* NSStringFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E2804AB09747BF800EC542B /* NSStringFormatter.m */; settings = {COMPILER_FLAGS = "-std=gnu99"; }; };
 		6EA049F309E57D5F0067589C /* NSString_unicode.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E2804AE09747BF800EC542B /* NSString_unicode.m */; };
 		6EA049F409E57D5F0067589C /* NSString_unicodePtr.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E2804B009747BF800EC542B /* NSString_unicodePtr.m */; };
 		6EA049F509E57D5F0067589C /* NSStringUTF8.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E2804B209747BF800EC542B /* NSStringUTF8.m */; };
@@ -2840,7 +2840,7 @@
 		FE1365EC0F154B3A000F2657 /* NSOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = FE1365DC0F154B3A000F2657 /* NSOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FE1365ED0F154B3A000F2657 /* NSOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = FE1365DD0F154B3A000F2657 /* NSOperation.m */; };
 		FE1365EE0F154B3A000F2657 /* NSOperationQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = FE1365DE0F154B3A000F2657 /* NSOperationQueue.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		FE1365EF0F154B3A000F2657 /* NSOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = FE1365DF0F154B3A000F2657 /* NSOperationQueue.m */; };
+		FE1365EF0F154B3A000F2657 /* NSOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = FE1365DF0F154B3A000F2657 /* NSOperationQueue.m */; settings = {COMPILER_FLAGS = "-std=gnu99"; }; };
 		FE1365F00F154B3A000F2657 /* NSAtomicList.h in Headers */ = {isa = PBXBuildFile; fileRef = FE1365D80F154B3A000F2657 /* NSAtomicList.h */; };
 		FE1365F10F154B3A000F2657 /* NSAtomicList.m in Sources */ = {isa = PBXBuildFile; fileRef = FE1365D90F154B3A000F2657 /* NSAtomicList.m */; };
 		FE1365F40F154B3A000F2657 /* NSOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = FE1365DC0F154B3A000F2657 /* NSOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -12304,8 +12304,11 @@
 /* Begin PBXProject section */
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
 			buildConfigurationList = 6E2801B909746B8900EC542B /* Build configuration list for PBXProject "Foundation" */;
-			compatibilityVersion = "Xcode 2.4";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
@@ -16356,7 +16359,7 @@
 				DSTROOT = /;
 				EXECUTABLE_PREFIX = lib;
 				EXECUTABLE_SUFFIX = .so;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -16435,7 +16438,7 @@
 				DSTROOT = /;
 				EXECUTABLE_PREFIX = lib;
 				EXECUTABLE_SUFFIX = .so;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = /Developer/Cocotron/1.0/Linux/i386/Frameworks;
@@ -16564,6 +16567,7 @@
 		7E891F1C0D4964FF008150D3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_OPTIMIZATION_LEVEL = 0;
 				OTHER_CFLAGS = (
 					"-DPTHREAD_INSIDE_BUILD=1",
 					"-DCFNETWORK_INSIDE_BUILD=1",
