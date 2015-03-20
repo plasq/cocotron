@@ -303,7 +303,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
    if(_messageText!=nil){
     messageSize=[drawer sizeOfString:_messageText withAttributes:messageAttributes inSize:textSize];
-    messageSize.width+=TEXTFIELD_MARGIN*2;
+    // Message text is bold and the size calc seems to be a bit off for bold strings
+    messageSize.width+=TEXTFIELD_MARGIN*4;
     messageSize.height+=TEXTFIELD_MARGIN*2;
    }
 
