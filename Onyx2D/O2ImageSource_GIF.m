@@ -38,7 +38,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     return nil;
    }
    
-   DGifSlurp(_gif);
+    if (DGifSlurp(_gif) == GIF_ERROR) {
+        [self dealloc];
+        return nil;
+    }
    return self;
 }
 
@@ -71,6 +74,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    ColorMapObject *colorMap=_gif->SColorMap;
    if(colorMap==NULL)
     colorMap=gifImage->ImageDesc.ColorMap;
+    
+    if (colorMap == NULL) {
+        /*
+          If no Global Color Map is indicated, a default color map is generated internally
+          which  maps  each  possible incoming  color  index to the same hardware color index
+          modulo <n> where <n> is the number of available hardware colors
+
+          So ignore images without a color map because it's not 1987 anymore
+         */
+        return nil;
+    }
    int             bgColorIndex=(_gif->SColorMap==NULL)?-1:_gif->SBackGroundColor;
    int             colorCount=colorMap->ColorCount;
    GifColorType   *colorLUT=colorMap->Colors;
