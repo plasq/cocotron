@@ -3160,6 +3160,12 @@ NSString * const NSOldSelectedCharacterRange=@"NSOldSelectedCharacterRange";
 
 -(void)rulerView:(NSRulerView *)rulerView handleMouseDown:(NSEvent *)event
 {
+    // We don't handle double click
+    
+    if ([event clickCount] > 1) {
+        return;
+    }
+
     // Add a new tab stop
     NSPoint point = [self convertPoint: event.locationInWindow fromView: nil];
     float delta = rulerView.originOffset;

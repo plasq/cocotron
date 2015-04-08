@@ -284,6 +284,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 - (void)mouseDown:(NSEvent *)event
 {
+    // We don't handle double click
+    if ([event clickCount] > 1) {
+        return;
+    }
+    
     NSPoint point = [self convertPoint:[event locationInWindow] fromView:nil];
     int i, count = [_markers count];
     float location;
