@@ -1257,6 +1257,9 @@ static inline void _appendRectToCache(NSLayoutManager *self,NSRect rect){
 
 	*rectCount=_rectCacheCount;
 
+    // Cocoa pokes the ruler during layout
+    [[self firstTextView] updateRuler];
+    
 #if DEBUG_rectArrayForGlyphRange_withinSelectedGlyphRange_inTextContainer_rectCount
     NSLog(@"returning %d rects", *rectCount);
 #endif
