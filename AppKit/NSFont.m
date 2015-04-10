@@ -43,8 +43,6 @@ FOUNDATION_EXPORT char *NSUnicodeToSymbol(const unichar *characters,unsigned len
 }
 
 -(NSString *)translateFromNibFontName:(NSString *)name {
-	NSString *displayName = [O2Font displayNameForPostscriptName:name];
-
 	if ([name isEqual:@"Helvetica"])
 		return [O2Font postscriptNameForDisplayName:@"Arial"];
 	if([name isEqual:@"Helvetica-Bold"])
@@ -67,12 +65,18 @@ FOUNDATION_EXPORT char *NSUnicodeToSymbol(const unichar *characters,unsigned len
 		return [O2Font postscriptNameForDisplayName:@"Arial Bold"];
     
     // Special fonts used by Xcode 5 when compiling some xibs
-	if([name isEqual:@".LucidaGrandeUI"])
-		return [O2Font postscriptNameForDisplayName:@"Arial"];
-	if([name isEqual:@".LucidaGrandeUI-Bold"])
-		return [O2Font postscriptNameForDisplayName:@"Arial Bold"];
+    if([name isEqual:@".LucidaGrandeUI"])
+        return [O2Font postscriptNameForDisplayName:@"Arial"];
+    if([name isEqual:@".LucidaGrandeUI-Bold"])
+        return [O2Font postscriptNameForDisplayName:@"Arial Bold"];
     
-	if([name isEqual:@"HelveticaNeue-CondensedBold"])
+    // Special fonts used when compiling some xibs on 10.10
+    if([name isEqual:@".HelveticaNeueDeskInterface-Regular"])
+        return [O2Font postscriptNameForDisplayName:@"Arial"];
+    if([name isEqual:@".HelveticaNeueDeskInterface-Bold"])
+        return [O2Font postscriptNameForDisplayName:@"Arial Bold"];
+    
+    if([name isEqual:@"HelveticaNeue-CondensedBold"])
 		return [O2Font postscriptNameForDisplayName:@"Arial"];    
 	if([name isEqual:@"HelveticaNeue-Bold"])
 		return [O2Font postscriptNameForDisplayName:@"Arial"];
