@@ -30,7 +30,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    NSSize          size={640,480};
    NSStringDrawer *drawer=[NSStringDrawer sharedStringDrawer];
    NSSize          messageSize=[drawer sizeOfString:message withAttributes:nil inSize:size];
-   NSSize          defaultSize,alternateSize,otherSize;
+   NSSize          defaultSize,alternateSize,otherSize,titleSize;
    NSSize          imageMessageSize=NSZeroSize;
    float           buttonWidth,buttonHeight,buttonTotalWidth,buttonTotalHeight;
    NSSize          panelSize=NSZeroSize;
@@ -90,7 +90,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    imageMessageSize.height=MAX(imageSize.height,messageSize.height);
    imageMessageSize.height+=TOP_MARGIN;
 
-   panelSize.width=MAX(imageMessageSize.width,buttonTotalWidth);
+    titleSize = [drawer sizeOfString: title withAttributes: nil inSize: size];
+    titleSize.width *= 2; // The title font of the platform window is typically larger.
+    
+   panelSize.width=MAX(titleSize.width, MAX(imageMessageSize.width,buttonTotalWidth));
    panelSize.height=imageMessageSize.height+buttonTotalHeight;
 
    contentRect.origin=NSZeroPoint;
