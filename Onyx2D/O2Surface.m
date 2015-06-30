@@ -32,54 +32,54 @@
 
 @implementation O2Surface
 
-#define RI_MAX_GAUSSIAN_STD_DEVIATION	128.0f
+#define RI_MAX_GAUSSIAN_STD_DEVIATION    128.0f
 
 /*-------------------------------------------------------------------*//*!
-* \brief	Converts from the current internal format to another.
-* \param	
-* \return	
-* \note		
+* \brief    Converts from the current internal format to another.
+* \param    
+* \return    
+* \note        
 *//*-------------------------------------------------------------------*/
 
-	//From Section 3.4.2 of OpenVG 1.0.1 spec
-	//1: sRGB = gamma(lRGB)
-	//2: lRGB = invgamma(sRGB)
-	//3: lL = 0.2126 lR + 0.7152 lG + 0.0722 lB
-	//4: lRGB = lL
-	//5: sL = gamma(lL)
-	//6: lL = invgamma(sL)
-	//7: sRGB = sL
+    //From Section 3.4.2 of OpenVG 1.0.1 spec
+    //1: sRGB = gamma(lRGB)
+    //2: lRGB = invgamma(sRGB)
+    //3: lL = 0.2126 lR + 0.7152 lG + 0.0722 lB
+    //4: lRGB = lL
+    //5: sL = gamma(lL)
+    //6: lL = invgamma(sL)
+    //7: sRGB = sL
 
-	//Source/Dest lRGB sRGB   lL   sL 
-	//lRGB          —    1    3    3,5 
-	//sRGB          2    —    2,3  2,3,5 
-	//lL            4    4,1  —    5 
-	//sL            7,2  7    6    — 
+    //Source/Dest lRGB sRGB   lL   sL 
+    //lRGB          —    1    3    3,5 
+    //sRGB          2    —    2,3  2,3,5 
+    //lL            4    4,1  —    5 
+    //sL            7,2  7    6    — 
 
 #if 0
 // Can't use 'gamma' ?
 static O2Float dogamma(O2Float c)
 {    
-	if( c <= 0.00304f )
-		c *= 12.92f;
-	else
-		c = 1.0556f * (O2Float)pow(c, 1.0f/2.4f) - 0.0556f;
-	return c;
+    if( c <= 0.00304f )
+        c *= 12.92f;
+    else
+        c = 1.0556f * (O2Float)pow(c, 1.0f/2.4f) - 0.0556f;
+    return c;
 }
 
 static O2Float invgamma(O2Float c)
 {
-	if( c <= 0.03928f )
-		c /= 12.92f;
-	else
-		c = (O2Float)pow((c + 0.0556f)/1.0556f, 2.4f);
-	return c;
+    if( c <= 0.03928f )
+        c /= 12.92f;
+    else
+        c = (O2Float)pow((c + 0.0556f)/1.0556f, 2.4f);
+    return c;
 }
 
 #endif
 static O2Float lRGBtoL(O2Float r, O2Float g, O2Float b)
 {
-	return 0.2126f*r + 0.7152f*g + 0.0722f*b;
+    return 0.2126f*r + 0.7152f*g + 0.0722f*b;
 }
 
 static void colorToBytesLittle(O2Float color,uint8_t *scanline){
@@ -163,7 +163,7 @@ static void O2SurfaceWrite_argb32f_to_argb32fBig(O2Surface *self,int x,int y,O2a
 }
 
 static unsigned char colorToNibble(O2Float c){
-	return RI_INT_MIN(RI_INT_MAX(RI_FLOOR_TO_INT(c * (O2Float)0xF + 0.5f), 0), 0xF);
+    return RI_INT_MIN(RI_INT_MAX(RI_FLOOR_TO_INT(c * (O2Float)0xF + 0.5f), 0), 0xF);
 }
 
 static void O2SurfaceWrite_argb32f_to_GA88(O2Surface *self,int x,int y,O2argb32f *span,int length){
@@ -486,39 +486,48 @@ static BOOL initFunctionsForParameters(O2Surface *self,size_t bitsPerComponent,s
 }
 
 -initWithBytes:(void *)bytes width:(size_t)width height:(size_t)height bitsPerComponent:(size_t)bitsPerComponent bytesPerRow:(size_t)bytesPerRow colorSpace:(O2ColorSpaceRef)colorSpace bitmapInfo:(O2BitmapInfo)bitmapInfo {
-   O2DataProvider *provider;
-   int bitsPerPixel=32;
-   
-   if(bytes!=NULL){
-    provider=[[[O2DataProvider alloc] initWithBytes:bytes length:bytesPerRow*height] autorelease];
-    m_ownsData=NO;
-   }
-   else {
-    if(bytesPerRow>0 && bytesPerRow<(width*bitsPerPixel)/8){
-     NSLog(@"invalid bytes per row=%zu",bytesPerRow);
-     bytesPerRow=0;
+    O2DataProvider *provider = nil;
+    int bitsPerPixel=32;
+    
+    if(bytes!=NULL){
+        provider=[[O2DataProvider alloc] initWithBytes:bytes length:bytesPerRow*height];
+        m_ownsData=NO;
+    }
+    else {
+        if(bytesPerRow>0 && bytesPerRow<(width*bitsPerPixel)/8){
+            NSLog(@"invalid bytes per row=%zu",bytesPerRow);
+            bytesPerRow=0;
+        }
+        
+        if(bytesPerRow==0)
+            bytesPerRow=(width*bitsPerPixel)/8;
+        
+        NSMutableData *data=[[NSMutableData alloc] initWithLength:bytesPerRow*height*sizeof(uint8_t)]; // this will also zero the bytes
+        provider=O2DataProviderCreateWithCFData((CFDataRef)data);
+        [data release];
+        
+        m_ownsData=YES;
     }
     
-    if(bytesPerRow==0)
-     bytesPerRow=(width*bitsPerPixel)/8;
-     
-    NSMutableData *data=[NSMutableData dataWithLength:bytesPerRow*height*sizeof(uint8_t)]; // this will also zero the bytes
-    provider=[O2DataProviderCreateWithCFData((CFDataRef)data) autorelease];
-  	m_ownsData=YES;
-   }
-   
-    if([super initWithWidth:width height:height bitsPerComponent:bitsPerComponent bitsPerPixel:bitsPerPixel bytesPerRow:bytesPerRow colorSpace:colorSpace bitmapInfo:bitmapInfo decoder: NULL provider:provider decode:NULL interpolate:YES renderingIntent:kO2RenderingIntentDefault]==nil)
-    return nil;
-   
-   if([provider isDirectAccess])
-    _pixelBytes=(void *)[provider bytes];
+    if([super initWithWidth:width height:height bitsPerComponent:bitsPerComponent bitsPerPixel:bitsPerPixel bytesPerRow:bytesPerRow colorSpace:colorSpace bitmapInfo:bitmapInfo decoder: NULL provider:provider decode:NULL interpolate:YES renderingIntent:kO2RenderingIntentDefault]==nil) {
+        
+        [provider release];
+        
+        return nil;
+    }
+    
+    if([provider isDirectAccess])
+        _pixelBytes=(void *)[provider bytes];
+    
+    if(!initFunctionsForParameters(self,bitsPerComponent,_bitsPerPixel,colorSpace,bitmapInfo))
+        NSLog(@"O2Surface -init error, return");
+    
+    _clampExternalPixels=NO; // only set to yes if premultiplied
+    pthread_mutex_init(&_lock,NULL);
+    
+    [provider release];
 
-   if(!initFunctionsForParameters(self,bitsPerComponent,_bitsPerPixel,colorSpace,bitmapInfo))
-    NSLog(@"O2Surface -init error, return");
-
-   _clampExternalPixels=NO; // only set to yes if premultiplied
-   pthread_mutex_init(&_lock,NULL);
-   return self;
+    return self;
 }
 
 -(void)dealloc {
@@ -545,20 +554,21 @@ void O2SurfaceUnlock(O2Surface *surface) {
    if(!m_ownsData)
     return;
 
-   _width=width;
-   _height=height;
-   _bytesPerRow=width*_bitsPerPixel/8;
-   
-   NSUInteger size=_bytesPerRow*height*sizeof(uint8_t);
-   NSUInteger allocateSize=[[_provider data] length];
-   
-   if((size>allocateSize) || (!roir && size!=allocateSize)){
-    [_provider release];
+    _width=width;
+    _height=height;
+    _bytesPerRow=width*_bitsPerPixel/8;
     
-    NSMutableData *data=[NSMutableData dataWithLength:size];
-       _provider=O2DataProviderCreateWithCFData((CFDataRef)data);
-    _pixelBytes=[data mutableBytes];
-   }
+    NSUInteger size=_bytesPerRow*height*sizeof(uint8_t);
+    NSUInteger allocateSize=[[_provider data] length];
+    
+    if((size>allocateSize) || (!roir && size!=allocateSize)){
+        [_provider release];
+        
+        NSMutableData *data=[[NSMutableData alloc] initWithLength:size];
+        _provider=O2DataProviderCreateWithCFData((CFDataRef)data);
+        _pixelBytes=[data mutableBytes];
+        [data release];
+    }
 }
 
 void *O2SurfaceGetPixelBytes(O2Surface *surface) {
@@ -607,22 +617,22 @@ void O2SurfaceWriteSpan_largb32f_PRE(O2Surface *self,int x,int y,O2argb32f *span
 
 
 /*-------------------------------------------------------------------*//*!
-* \brief	Applies Gaussian blur filter.
-* \param	
-* \return	
-* \note		
+* \brief    Applies Gaussian blur filter.
+* \param    
+* \return    
+* \note        
 *//*-------------------------------------------------------------------*/
 
 static O2argb32f gaussianReadPixel(int x, int y, int w, int h,O2argb32f *image)
 {
-	if(x < 0 || x >= w || y < 0 || y >= h) {	//apply tiling mode
-	 return O2argb32fInit(0,0,0,0);
-	}
-	else
-	{
-		RI_ASSERT(x >= 0 && x < w && y >= 0 && y < h);
-		return image[y*w+x];
-	}
+    if(x < 0 || x >= w || y < 0 || y >= h) {    //apply tiling mode
+     return O2argb32fInit(0,0,0,0);
+    }
+    else
+    {
+        RI_ASSERT(x >= 0 && x < w && y >= 0 && y < h);
+        return image[y*w+x];
+    }
 }
 
 typedef struct O2GaussianKernel {
@@ -646,59 +656,59 @@ O2GaussianKernel *O2CreateGaussianKernelWithDeviation(O2Float stdDeviation){
    O2Float stdDeviationX=stdDeviation;
    O2Float stdDeviationY=stdDeviation;
    
-	RI_ASSERT(stdDeviationX > 0.0f && stdDeviationY > 0.0f);
-	RI_ASSERT(stdDeviationX <= RI_MAX_GAUSSIAN_STD_DEVIATION && stdDeviationY <= RI_MAX_GAUSSIAN_STD_DEVIATION);
+    RI_ASSERT(stdDeviationX > 0.0f && stdDeviationY > 0.0f);
+    RI_ASSERT(stdDeviationX <= RI_MAX_GAUSSIAN_STD_DEVIATION && stdDeviationY <= RI_MAX_GAUSSIAN_STD_DEVIATION);
        
-	//find a size for the kernel
-	O2Float totalWeightX = stdDeviationX*(O2Float)sqrt(2.0f*M_PI);
-	O2Float totalWeightY = stdDeviationY*(O2Float)sqrt(2.0f*M_PI);
-	const O2Float tolerance = 0.99f;	//use a kernel that covers 99% of the total Gaussian support
+    //find a size for the kernel
+    O2Float totalWeightX = stdDeviationX*(O2Float)sqrt(2.0f*M_PI);
+    O2Float totalWeightY = stdDeviationY*(O2Float)sqrt(2.0f*M_PI);
+    const O2Float tolerance = 0.99f;    //use a kernel that covers 99% of the total Gaussian support
 
-	O2Float expScaleX = -1.0f / (2.0f*stdDeviationX*stdDeviationX);
-	O2Float expScaleY = -1.0f / (2.0f*stdDeviationY*stdDeviationY);
+    O2Float expScaleX = -1.0f / (2.0f*stdDeviationX*stdDeviationX);
+    O2Float expScaleY = -1.0f / (2.0f*stdDeviationY*stdDeviationY);
 
-	int kernelWidth = 0;
-	O2Float e = 0.0f;
-	O2Float sumX = 1.0f;	//the weight of the middle entry counted already
-	do{
-		kernelWidth++;
-		e = (O2Float)exp((O2Float)(kernelWidth * kernelWidth) * expScaleX);
-		sumX += e*2.0f;	//count left&right lobes
-	}while(sumX < tolerance*totalWeightX);
+    int kernelWidth = 0;
+    O2Float e = 0.0f;
+    O2Float sumX = 1.0f;    //the weight of the middle entry counted already
+    do{
+        kernelWidth++;
+        e = (O2Float)exp((O2Float)(kernelWidth * kernelWidth) * expScaleX);
+        sumX += e*2.0f;    //count left&right lobes
+    }while(sumX < tolerance*totalWeightX);
 
-	int kernelHeight = 0;
-	e = 0.0f;
-	O2Float sumY = 1.0f;	//the weight of the middle entry counted already
-	do{
-		kernelHeight++;
-		e = (O2Float)exp((O2Float)(kernelHeight * kernelHeight) * expScaleY);
-		sumY += e*2.0f;	//count left&right lobes
-	}while(sumY < tolerance*totalWeightY);
+    int kernelHeight = 0;
+    e = 0.0f;
+    O2Float sumY = 1.0f;    //the weight of the middle entry counted already
+    do{
+        kernelHeight++;
+        e = (O2Float)exp((O2Float)(kernelHeight * kernelHeight) * expScaleY);
+        sumY += e*2.0f;    //count left&right lobes
+    }while(sumY < tolerance*totalWeightY);
 
-	//make a separable kernel
+    //make a separable kernel
     kernel->xSize=kernelWidth*2+1;
     kernel->xValues=NSZoneMalloc(NULL,sizeof(O2Float)*kernel->xSize);
     kernel->xShift = kernelWidth;
     kernel->xScale = 0.0f;
     int i;
-	for(i=0;i<kernel->xSize;i++){
-		int x = i-kernel->xShift;
-		kernel->xValues[i] = (O2Float)exp((O2Float)x*(O2Float)x * expScaleX);
-		kernel->xScale += kernel->xValues[i];
-	}
-	kernel->xScale = 1.0f / kernel->xScale;	//NOTE: using the mathematical definition of the scaling term doesn't work since we cut the filter support early for performance
+    for(i=0;i<kernel->xSize;i++){
+        int x = i-kernel->xShift;
+        kernel->xValues[i] = (O2Float)exp((O2Float)x*(O2Float)x * expScaleX);
+        kernel->xScale += kernel->xValues[i];
+    }
+    kernel->xScale = 1.0f / kernel->xScale;    //NOTE: using the mathematical definition of the scaling term doesn't work since we cut the filter support early for performance
 
     kernel->ySize=kernelHeight*2+1;
     kernel->yValues=NSZoneMalloc(NULL,sizeof(O2Float)*kernel->ySize);
     kernel->yShift = kernelHeight;
     kernel->yScale = 0.0f;
-	for(i=0;i<kernel->ySize;i++)
-	{
-		int y = i-kernel->yShift;
-		kernel->yValues[i] = (O2Float)exp((O2Float)y*(O2Float)y * expScaleY);
-		kernel->yScale += kernel->yValues[i];
-	}
-	kernel->yScale = 1.0f / kernel->yScale;	//NOTE: using the mathematical definition of the scaling term doesn't work since we cut the filter support early for performance
+    for(i=0;i<kernel->ySize;i++)
+    {
+        int y = i-kernel->yShift;
+        kernel->yValues[i] = (O2Float)exp((O2Float)y*(O2Float)y * expScaleY);
+        kernel->yScale += kernel->yValues[i];
+    }
+    kernel->yScale = 1.0f / kernel->yScale;    //NOTE: using the mathematical definition of the scaling term doesn't work since we cut the filter support early for performance
     
     return kernel;
 }
@@ -736,17 +746,17 @@ static O2argb32f argbFromColor(O2ColorRef color){
 void O2SurfaceGaussianBlur(O2Surface *self,O2Image * src, O2GaussianKernel *kernel,O2ColorRef color){
    O2argb32f argbColor=argbFromColor(color);
    
-	//the area to be written is an intersection of source and destination image areas.
-	//lower-left corners of the images are aligned.
-	int w = RI_INT_MIN(self->_width, src->_width);
-	int h = RI_INT_MIN(self->_height, src->_height);
-	RI_ASSERT(w > 0 && h > 0);
+    //the area to be written is an intersection of source and destination image areas.
+    //lower-left corners of the images are aligned.
+    int w = RI_INT_MIN(self->_width, src->_width);
+    int h = RI_INT_MIN(self->_height, src->_height);
+    RI_ASSERT(w > 0 && h > 0);
     
-	O2argb32f *tmp=NSZoneMalloc(NULL,src->_width*src->_height*sizeof(O2argb32f));
+    O2argb32f *tmp=NSZoneMalloc(NULL,src->_width*src->_height*sizeof(O2argb32f));
 
-	//copy source region to tmp and do conversion
+    //copy source region to tmp and do conversion
     int i,j;
-	for(j=0;j<src->_height;j++){
+    for(j=0;j<src->_height;j++){
      O2argb32f *tmpRow=tmp+j*src->_width;
      int         i,width=src->_width;
      O2argb32f *direct=O2Image_read_argb32f(src,0,j,tmpRow,width);
@@ -762,35 +772,35 @@ void O2SurfaceGaussianBlur(O2Surface *self,O2Image * src, O2GaussianKernel *kern
       tmpRow[i].b=argbColor.b*tmpRow[i].a;
      }
      
-  	}
+      }
 
-	O2argb32f *tmp2=NSZoneMalloc(NULL,w*src->_height*sizeof(O2argb32f));
+    O2argb32f *tmp2=NSZoneMalloc(NULL,w*src->_height*sizeof(O2argb32f));
 
-	//horizontal pass
-	for(j=0;j<src->_height;j++){
-		for(i=0;i<w;i++){
-			O2argb32f sum=O2argb32fInit(0,0,0,0);
+    //horizontal pass
+    for(j=0;j<src->_height;j++){
+        for(i=0;i<w;i++){
+            O2argb32f sum=O2argb32fInit(0,0,0,0);
             int ki;
-			for(ki=0;ki<kernel->xSize;ki++){
-				int x = i+ki-kernel->xShift;
-				sum=O2argb32fAdd(sum, O2argb32fMultiplyByFloat(gaussianReadPixel(x, j, src->_width, src->_height, tmp),kernel->xValues[ki]));
-			}
-			tmp2[j*w+i] = O2argb32fMultiplyByFloat(sum, kernel->xScale);
-		}
-	}
-	//vertical pass
-	for(j=0;j<h;j++){
-		for(i=0;i<w;i++){
-			O2argb32f sum=O2argb32fInit(0,0,0,0);
+            for(ki=0;ki<kernel->xSize;ki++){
+                int x = i+ki-kernel->xShift;
+                sum=O2argb32fAdd(sum, O2argb32fMultiplyByFloat(gaussianReadPixel(x, j, src->_width, src->_height, tmp),kernel->xValues[ki]));
+            }
+            tmp2[j*w+i] = O2argb32fMultiplyByFloat(sum, kernel->xScale);
+        }
+    }
+    //vertical pass
+    for(j=0;j<h;j++){
+        for(i=0;i<w;i++){
+            O2argb32f sum=O2argb32fInit(0,0,0,0);
             int kj;
-			for(kj=0;kj<kernel->ySize;kj++){
-				int y = j+kj-kernel->yShift;
-				sum=O2argb32fAdd(sum,  O2argb32fMultiplyByFloat(gaussianReadPixel(i, y, w, src->_height, tmp2), kernel->yValues[kj]));
-			}
+            for(kj=0;kj<kernel->ySize;kj++){
+                int y = j+kj-kernel->yShift;
+                sum=O2argb32fAdd(sum,  O2argb32fMultiplyByFloat(gaussianReadPixel(i, y, w, src->_height, tmp2), kernel->yValues[kj]));
+            }
             sum=O2argb32fMultiplyByFloat(sum, kernel->yScale);
-			O2SurfaceWriteSpan_largb32f_PRE(self,i, j, &sum,1);
-		}
-	}
+            O2SurfaceWriteSpan_largb32f_PRE(self,i, j, &sum,1);
+        }
+    }
     NSZoneFree(NULL,tmp);
     NSZoneFree(NULL,tmp2);
 }

@@ -17,7 +17,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 @implementation O2DataProvider
 
 -initWithData:(NSData *)data {
-   _inputStream=[[NSInputStream inputStreamWithData:data] retain];
+   _inputStream=[[NSInputStream alloc] initWithData:data] ;
    [_inputStream open];
    _data=[data retain];
    _isDirectAccess=YES;
@@ -27,8 +27,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 }
 
 -initWithBytes:(const void *)bytes length:(size_t)length {
-   NSData *data=[NSData dataWithBytesNoCopy:(void *)bytes length:length freeWhenDone:NO];
-   return [self initWithData:data];
+    
+    NSData *data=[[NSData allocWithZone:NULL] initWithBytesNoCopy:bytes length:length freeWhenDone:NO];
+    id result = [self initWithData:data];
+    [data release];
+    return result;
 }
 
 -initWithFilename:(const char *)pathCString {

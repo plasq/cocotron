@@ -397,14 +397,17 @@ static void _decodeArrayOfUnsigned32(O2Decoder_TIFF *self,unsigned **valuesp,uns
 }
 
 -initWithContentsOfFile:(NSString *)path {
-   NSData *data=[NSData dataWithContentsOfFile:path];
+   NSData *data=[[NSData alloc] initWithContentsOfFile:path];
    
    if(data==nil){
     [self dealloc];
     return nil;
    }
    
-   return [self initWithData:data];
+   self = [self initWithData:data];
+   [data release];
+    
+    return self;
 }
 
 -(void)dealloc {
