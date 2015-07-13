@@ -361,6 +361,7 @@ NSString * const NSWindowDidAnimateNotification=@"NSWindowDidAnimateNotification
  */
 -(void)_createPlatformWindowOnMainThread {
 	if(_platformWindow==nil){
+        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 		if([self isKindOfClass:[NSPanel class]])
 			_platformWindow=[[[NSDisplay currentDisplay] panelWithFrame: _frame styleMask:_styleMask backingType:_backingType] retain];
 		else
@@ -372,6 +373,8 @@ NSString * const NSWindowDidAnimateNotification=@"NSWindowDidAnimateNotification
 		[self _updatePlatformWindowTitle];
 		
 		[[NSDraggingManager draggingManager] registerWindow:self dragTypes:nil];
+        
+        [pool drain];
 	}
 }
 

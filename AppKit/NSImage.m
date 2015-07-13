@@ -223,8 +223,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 -initWithCGImage:(CGImageRef)cgImage size:(NSSize)size;
 {
     if (self = [self initWithSize:size]) {
-        NSBitmapImageRep *rep = [[[NSBitmapImageRep alloc] initWithCGImage:cgImage] autorelease];
+        NSBitmapImageRep *rep = [[NSBitmapImageRep alloc] initWithCGImage:cgImage];
         [_representations addObject:rep];
+        [rep release];
     }
     return self;
 }
@@ -423,7 +424,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 -(void)addRepresentations:(NSArray *)array {
    int i,count=[array count];
-   
+   		
    for(i=0;i<count;i++)
     [self addRepresentation:[array objectAtIndex:i]];
 }
@@ -518,8 +519,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 -(NSImageRep *)bestRepresentationForDevice:(NSDictionary *)device {
    if(device==nil)    
     device=[[NSGraphicsContext currentContext] deviceDescription];
-   
-   if([device objectForKey:NSDeviceIsPrinter]!=nil){
+
+    if([device objectForKey:NSDeviceIsPrinter]!=nil){
     int i,count=[_representations count];
      
     for(i=0;i<count;i++){
@@ -650,6 +651,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    NSGraphicsContext *context=nil;
    CGContextRef       graphicsPort;
 
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    
    if(representation==nil){
 // FIXME: Cocoa doesn't add the cached rep until the unlockFocus, it just creates the drawing context 
 // then snaps the image during unlock and adds it
@@ -680,6 +683,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    
    if(context==nil){
     [NSException raise:NSInvalidArgumentException format:@"NSImageRep %@ can not be lockFocus'd"]; 
+       [pool release];
     return;
    }
    
@@ -699,6 +703,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     CGContextConcatCTM(graphicsPort,flip);
    }
 
+    [pool release];
 }
 
 -(void)unlockFocus {
