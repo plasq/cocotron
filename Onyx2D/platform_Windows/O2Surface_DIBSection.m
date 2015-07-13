@@ -35,7 +35,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 }
 
 -initWithBytes:(void *)bytes width:(size_t)width height:(size_t)height bitsPerComponent:(size_t)bitsPerComponent bytesPerRow:(size_t)bytesPerRow colorSpace:(O2ColorSpaceRef)colorSpace bitmapInfo:(O2BitmapInfo)bitmapInfo {
-   if(bytes==NULL && bitsPerComponent==8 && bitmapInfo==(kO2ImageAlphaPremultipliedFirst|kO2BitmapByteOrder32Host) && O2ColorSpaceGetModel(colorSpace)==kO2ColorSpaceModelRGB){
+
+    if(bytes==NULL && bitsPerComponent==8 && (bitmapInfo==(kO2ImageAlphaPremultipliedFirst|kO2BitmapByteOrder32Host) || bitmapInfo==(kO2ImageAlphaPremultipliedFirst|kO2BitmapByteOrderDefault)) && O2ColorSpaceGetModel(colorSpace)==kO2ColorSpaceModelRGB){
     return [self initWithWidth:width height:height compatibleWithDeviceContext:nil];
    }
 
