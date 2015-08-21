@@ -367,13 +367,17 @@ static inline void flushPreviousString(NSRichTextReader *self) {
             NSFont *font=[_currentAttributes objectForKey:NSFontAttributeName];
             
             font=[[NSFontManager sharedFontManager] convertFont:font toHaveTrait:argument?NSBoldFontMask:NSUnboldFontMask];
-            [_currentAttributes setObject:font forKey:NSFontAttributeName];
+            if (font) {
+                [_currentAttributes setObject:font forKey:NSFontAttributeName];
+            }
         }
         else if([self isEqualToString:@"i"]){
             NSFont *font=[_currentAttributes objectForKey:NSFontAttributeName];
             
             font=[[NSFontManager sharedFontManager] convertFont:font toHaveTrait:argument?NSItalicFontMask:NSUnitalicFontMask];
-            [_currentAttributes setObject:font forKey:NSFontAttributeName];
+            if (font) {
+                [_currentAttributes setObject:font forKey:NSFontAttributeName];
+            }
         }
         else if([self isEqualToString:@"par"]){
             if ([self currentDestination] == DESTINATION_STRING) {
@@ -389,7 +393,9 @@ static inline void flushPreviousString(NSRichTextReader *self) {
             NSFont *font=[_currentAttributes objectForKey:NSFontAttributeName];
             
             font=[[NSFontManager sharedFontManager] convertFont:font toSize:argument/2];
-            [_currentAttributes setObject:font forKey:NSFontAttributeName];
+            if (font) {
+                [_currentAttributes setObject:font forKey:NSFontAttributeName];
+            }
         }
         else if([self isEqualToString:@"cf"]){
             NSColor *c = [self colorAtIndex:argument];
@@ -459,7 +465,9 @@ static inline void flushPreviousString(NSRichTextReader *self) {
                         // We'll try to keep the traits, size of the current font and just change the family name
                         font=[[NSFontManager sharedFontManager] convertFont:currentFont toFamily:[font familyName]];
                     }
-                    [_currentAttributes setObject:font forKey:NSFontAttributeName];
+                    if (font) {
+                        [_currentAttributes setObject:font forKey:NSFontAttributeName];
+                    }
                 }
             }
         }
@@ -756,6 +764,7 @@ static inline void flushPreviousString(NSRichTextReader *self) {
 
 -(NSAttributedString *)parseAttributedString {
     [self tokenize];
+
     return _attributedString;
 }
 
