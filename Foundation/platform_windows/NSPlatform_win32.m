@@ -240,19 +240,19 @@ NSString * const NSPlatformLoadableObjectFilePrefix=@"";
    id      *objects,*keys;
    NSUInteger count;
 
-   char  *envString=GetEnvironmentStrings();
-   char **env;
-   char  *keyValue;
+   wchar_t  *envString=GetEnvironmentStringsW();
+   wchar_t **env;
+   wchar_t  *keyValue;
    int    i,len,max;
-   char  *run;
+   wchar_t  *run;
 
    for(count=0,run=envString;*run;count++)
-    run+=strlen(run)+1;
+    run+=wcslen(run)+1;
 
-   env=__builtin_alloca(sizeof(char *)*(count+1));
+   env=__builtin_alloca(sizeof(wchar_t *)*(count+1));
    for(count=0,run=envString;*run;count++){
     env[count]=run;
-    run+=strlen(run)+1;
+    run+=wcslen(run)+1;
    }
    env[count]=NULL;
 
@@ -260,27 +260,27 @@ NSString * const NSPlatformLoadableObjectFilePrefix=@"";
 
    max=0;
    for(count=0;env[count];count++)
-    if((len=strlen(env[count]))>max)
+    if((len=wcslen(env[count]))>max)
      max=len;
 
-   keyValue=__builtin_alloca(max+1);
+   keyValue=__builtin_alloca(sizeof(wchar_t)*(max+1));
    objects=__builtin_alloca(sizeof(id)*count);
    keys=__builtin_alloca(sizeof(id)*count);
 
    for(count=0;env[count];count++){
-    len=strlen(strcpy(keyValue,env[count]));
+    len=wcslen(wcscpy(keyValue,env[count]));
 
     for(i=0;i<len;i++)
      if(keyValue[i]=='=')
       break;
     keyValue[i]='\0';
 
-    objects[count]=[NSString stringWithCString:keyValue+i+1];
-    keys[count]=[NSString stringWithCString:keyValue];
+       objects[count]=[NSString stringWithFormat:@"%S",keyValue+i+1];
+       keys[count]=[NSString stringWithFormat:@"%S",keyValue];
     [self checkEnvironmentKey:keys[count] value:objects[count]];
    }
 
-   FreeEnvironmentStrings(envString);
+   FreeEnvironmentStringsW(envString);
    
    return [[NSDictionary allocWithZone:NULL] initWithObjects:objects forKeys:keys
      count:count];
