@@ -1105,7 +1105,8 @@ static inline void buildTransformsIfNeeded(NSView *self) {
 }
 
 -(NSArray *)trackingAreas {
-   return _trackingAreas;
+    // Cocoa docs say it returns an empty array if there are no tracking areas
+    return _trackingAreas != nil ? _trackingAreas : [NSArray array];
 }
 
 -(void)_trackingAreasChanged {
