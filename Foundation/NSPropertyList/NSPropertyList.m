@@ -64,4 +64,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    return nil;
 }
 
++ (id)propertyListWithData:(NSData *)data options:(NSPropertyListReadOptions)opt format:(NSPropertyListFormat *)format error:(NSError **)error
+{
+    // A dumb wrapper for this deprecated API.
+    return [self propertyListFromData: data mutabilityOption: NSPropertyListImmutable format: format errorDescription: nil];
+}
+
+
 @end
