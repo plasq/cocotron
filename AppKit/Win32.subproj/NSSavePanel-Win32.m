@@ -121,6 +121,7 @@ static unsigned *saveFileHook(HWND hdlg,UINT uiMsg,WPARAM wParam,LPARAM lParam) 
 		
 		[_filename release];
 		_filename=[[NSString stringWithCharacters:openFileName.lpstrFile length:wcslen(openFileName.lpstrFile)] copy];
+        [self setDirectory: [_filename stringByDeletingLastPathComponent]];
 		if(![[_filename pathExtension] isEqualToString:_requiredFileType]){
 			[_filename autorelease];
 			_filename=[[_filename stringByAppendingPathExtension:_requiredFileType] copy];
