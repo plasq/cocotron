@@ -611,12 +611,8 @@ static int untitled_document_number = 0;
 		saveResult = [savePanel runModalForDirectory:[path stringByDeletingLastPathComponent]
 												file:[path lastPathComponent]];
 	} else {
-        NSString *directory = [savePanel directory];
-        if (directory == nil) {
-            // Suggest saving in some reasonable directory
-            directory = [[NSDocumentController sharedDocumentController] currentDirectory];
-        }
-		saveResult = [savePanel runModalForDirectory: directory
+        // We don't know where to put it - so let the system decide
+		saveResult = [savePanel runModalForDirectory: NULL
                                                 file: [self displayName]];
 	}
 	if(saveResult) {
