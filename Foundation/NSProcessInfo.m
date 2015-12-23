@@ -5,6 +5,11 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
+
+#ifdef WIN32
+#import <windows.h>
+#endif
+
 #import <Foundation/NSProcessInfo.h>
 #import <Foundation/NSArray.h>
 #import <Foundation/NSDictionary.h>
@@ -14,7 +19,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <Foundation/NSString_cString.h>
 #import <Foundation/NSThread-Private.h>
 #import <Foundation/NSPlatform.h>
+
+#ifdef WIN32
 #import <Foundation/NSPlatform_win32.h>
+#endif
+
 #import <objc/runtime.h>
 
 @implementation NSProcessInfo
@@ -48,8 +57,18 @@ const char * const *NSProcessInfoArgv=NULL;
 }
 
 -(NSUInteger)processorCount {
+
+#ifdef WIN32
+    SYSTEM_INFO sysinfo;
+    GetSystemInfo( &sysinfo );
+    
+    DWORD numCPU = sysinfo.dwNumberOfProcessors;
+    return (NSUInteger)numCPU;
+#else
    NSUnimplementedMethod();
    return 0;
+#endif
+    
 }
 
 -(NSUInteger)activeProcessorCount {
@@ -58,8 +77,18 @@ const char * const *NSProcessInfoArgv=NULL;
 }
 
 -(uint64_t)physicalMemory {
+
+#ifdef WIN32
+    MEMORYSTATUSEX memoryStatus;
+    if (GlobalMemoryStatusEx(&memoryStatus) != 0) {
+        return memoryStatus.ullTotalPhys;
+    }
+    return 0;
+#else
    NSUnimplementedMethod();
-   return 0;
+    return 0;
+#endif
+    
 }
 
 -(NSUInteger)operatingSystem {
@@ -73,6 +102,8 @@ const char * const *NSProcessInfoArgv=NULL;
 }
 
 -(NSString *)operatingSystemVersionString {
+
+#ifdef WIN32
 	OSVERSIONINFOEX osVersion;
 	int systemVersion;
 	NSString* versionString;
@@ -129,6 +160,10 @@ const char * const *NSProcessInfoArgv=NULL;
 			return [NSString stringWithFormat: @"%d.%d %d %d", osVersion.dwMajorVersion, osVersion.dwMinorVersion, osVersion.wServicePackMajor, osVersion.wServicePackMinor ];
 			break;
 	}
+#else
+    NSUnimplementedMethod();
+    return nil;
+#endif
 }
 
 -(NSString *)hostName {
