@@ -776,9 +776,12 @@ static NSMutableString *AssembleResourceSpecifier( NSMutableString *result, NSSt
 -(NSString *)path {
    NSString *result=[self _basePath];
    
+#if 0
+    // Paths ending with '/' are perfectly legitimate so not sure why this was put here?
    if([result length]>1 && [result hasSuffix:@"/"])
     result=[result substringToIndex:[result length]-1];
-
+#endif
+    
    return result;
 }
 
@@ -798,9 +801,12 @@ static NSMutableString *AssembleResourceSpecifier( NSMutableString *result, NSSt
 -(NSString *)relativePath {
    NSString *result=[_path stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
+#if 0
+    // Paths ending with '/' are perfectly legitimate so not sure why this was put here?
    if([result length]>1 && [result hasSuffix:@"/"])
     result=[result substringToIndex:[result length]-1];
-   
+#endif
+    
    return result;
 }
 
