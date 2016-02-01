@@ -48,15 +48,23 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
    [self getCharacters:unicode];
 
-   e=0;
+    e=1; // Don't check the first char for "/" - that's a valid component for the first element
+    b=0;
+#if WINDOWS
+    // A bit sad to have some Windows specific code in that file...
+    if ([self hasPrefix:@"//"] || [self hasPrefix:@"\\\\"]) {
+        // On Windows, the first component of a "//xxxx/yy" path is "//xxxx"
+        e=2;
+    }
+#endif
    do{
-    b=e;
     while(e<length && unicode[e]!='\\' && unicode[e]!='/')
      e++;
     string=[NSString stringWithCharacters:unicode+b length:e-b];
 	if ([string length])
    	 [array addObject:string];
     e++; // skip sepchar
+    b=e;
    }while(e<length);
 
    return array;
@@ -311,7 +319,6 @@ NSArray *NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory directory,NSS
 
 	if(directory==NSLibraryDirectory){
 		NSString *path=[[NSPlatform currentPlatform] libraryDirectory];
-
 		[[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:NULL];
 
 		return [NSArray arrayWithObject:path];
