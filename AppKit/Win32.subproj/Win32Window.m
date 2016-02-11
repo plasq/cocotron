@@ -194,8 +194,12 @@ static const unichar *Win32ClassNameForStyleMask(unsigned styleMask,bool hasShad
 
    SetProp(_handle,"Win32Window",self);
 
+    // We'll disable asking for OpenGL support for now
+    // We don't need it and it might be related to some crash we have on that call, because of some buggy ATI driver
+    // Let's see if that helps
+#if 0
    [self setupPixelFormat];
-
+#endif
     HMENU systemMenu;
     
 	if ((systemMenu = GetSystemMenu(_handle, FALSE)) != NULL) {
@@ -702,14 +706,7 @@ static int reportGLErrorIfNeeded(const char *function,int line){
    
     pfd.nSize=sizeof(PIXELFORMATDESCRIPTOR);
     pfd.nVersion=1;
-    // We'll disable asking for OpenGL support for now
-    // We don't need it and it might be related to some crash we have on that call, because of some buggy ATI driver
-    // Let's see if that helps
-#if 0
     pfd.dwFlags=PFD_SUPPORT_OPENGL|PFD_GENERIC_ACCELERATED|PFD_DRAW_TO_WINDOW|PFD_DOUBLEBUFFER;
-#else
-    pfd.dwFlags=PFD_GENERIC_ACCELERATED|PFD_DRAW_TO_WINDOW|PFD_DOUBLEBUFFER;
-#endif
     pfd.iPixelType=PFD_TYPE_RGBA;
     pfd.cColorBits=24;
     pfd.cRedBits=8;
