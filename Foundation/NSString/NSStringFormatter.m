@@ -113,7 +113,7 @@ static inline void appendDecimal(NSStringBuffer *buffer,long long value,unichar 
      characters[length++]=(value%10)+'0';
      value/=10;
      
-     if(groupingSize){
+     if(groupingSize && value != 0){
       if((numberOfIntegralDigits%groupingSize)==0){
        NSInteger count=groupingLength; // we append backwards because the string gets reversed
        
@@ -177,9 +177,9 @@ static inline void appendUnsigned(NSStringBuffer *buffer,unsigned long long valu
      characters[length++]=(value%10)+'0';
      value/=10;
 
-     if(groupingSize){
+     if(groupingSize && value != 0){
       if((numberOfIntegralDigits%groupingSize)==0){
-       NSInteger count=groupingLength; // we append backwards because the string gets reversed
+      NSInteger count=groupingLength; // we append backwards because the string gets reversed
        
        while(--count>=0)
         characters[length++]=groupingBuffer[count];
@@ -273,7 +273,7 @@ static inline void appendFloat(NSStringBuffer *buffer,double value,
      characters[length++]=(unichar)fmod(integral,10.0)+'0';
      integral/=10.0;
 
-     if(groupingSize){
+     if(groupingSize && integral>=1.0){
       if((numberOfIntegralDigits%groupingSize)==0){
        NSInteger count=groupingLength; // we append backwards because the string gets reversed
        
