@@ -69,6 +69,14 @@ BOOL NSCurrentLocaleIsMetric(){
 		if (size) {
 			[desc setObject:[NSString stringWithFormat:@"%S", currency] forKey:NSLocaleCurrencySymbol];
 		}
+        
+        // Get the thousand separator
+        uint16_t thousand[4];
+        size=GetLocaleInfoW(lcid,LOCALE_STHOUSAND,thousand,sizeof(thousand)/sizeof(thousand[0]));
+        if (size) {
+            [desc setObject:[NSString stringWithFormat:@"%S", thousand] forKey:NSLocaleGroupingSeparator];
+        }
+
 		// TODO - gets date format, etc.
 	}	
 	return desc;
