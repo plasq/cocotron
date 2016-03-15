@@ -110,7 +110,10 @@ static NSUInteger decodeFromData(NSData* data, NSUInteger offset, NSUInteger *va
 		
 		[keyed encodeObject: [self string] forKey:@"NSString"];
 		NSRange range;
-		NSDictionary* dict = [self attributesAtIndex: 0 effectiveRange: &range];
+		NSDictionary* dict = nil;
+		if ([self length] > 0) {
+		   dict = [self attributesAtIndex: 0 effectiveRange: &range];
+		}
 		if (dict == nil || range.length == [self length]) {
 			[keyed encodeObject: dict forKey: @"NSAttributes"];
 		} else {
