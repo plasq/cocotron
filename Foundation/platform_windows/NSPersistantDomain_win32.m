@@ -124,7 +124,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
      result=nil;
     NS_ENDHANDLER
 
-    [_cache setObject:result forKey:key];
+     if (result) {
+        [_cache setObject:result forKey:key];
+     } else {
+         // Try to delete the broken entry from the registry
+         RegDeleteValueA(_handle,[key cString]);
+     }
    }
 
    return result;
