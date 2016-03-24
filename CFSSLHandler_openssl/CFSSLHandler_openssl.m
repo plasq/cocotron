@@ -57,7 +57,7 @@ static threadid_func(CRYPTO_THREADID *id){
    
    CFStringRef level=CFDictionaryGetValue(_properties,kCFStreamSSLLevel);
    
-   if(level==NULL)
+    if(level==NULL)
      _method=SSLv23_client_method();
    else if(CFStringCompare(level,kCFStreamSocketSecurityLevelSSLv3,0)==kCFCompareEqualTo)
      _method=SSLv3_client_method();
@@ -67,16 +67,37 @@ static threadid_func(CRYPTO_THREADID *id){
      _method=TLSv1_client_method();
    else
      _method=SSLv23_client_method();
-   
+    
    CFNumberRef validatesCertChain=CFDictionaryGetValue(_properties,kCFStreamSSLValidatesCertificateChain);
    
    if(validatesCertChain!=NULL){
    }
    
    _context=SSL_CTX_new(_method);
+    if (_context == NULL) {
+        NSCLog("ERROR: SSL_CTX_new() returned NULL!");
+        goto initError;
+    }
+        
    _connection=SSL_new(_context);
+
+    if (_connection == NULL) {
+        NSCLog("ERROR: SSL_new() returned NULL!");
+        goto initError;
+    }
+
    _incoming=BIO_new(BIO_s_mem());
+
+    if (_incoming == NULL) {
+        NSCLog("ERROR: BIO_new() for incoming returned NULL!");
+        goto initError;
+    }
+    
    _outgoing=BIO_new(BIO_s_mem());
+    if (_outgoing == NULL) {
+        NSCLog("ERROR: BIO_new() for outgoing returned NULL!");
+        goto initError;
+    }
 
    SSL_set_bio(_connection,_incoming,_outgoing);
    
@@ -89,14 +110,33 @@ static threadid_func(CRYPTO_THREADID *id){
    _stableBufferCapacity=8192;
    _stableBuffer=NSZoneMalloc(NULL,_stableBufferCapacity);
    _readBuffer=[[NSMutableData alloc] init];
-   
+
+        return self;
+        
+initError:
+    ERR_print_errors_fp(stderr);
+    [self release];
+    self = nil;
+
    return self;
 }
 
 -(void)dealloc {
-   CFRelease(_properties);
-   SSL_free(_connection);
+    if (_properties) {
+        CFRelease(_properties);
+    }
+    
+    if (_connection) {
+        SSL_free(_connection); // Also frees the _incoming and _outgoing BIOs
+    }
+    
+    if (_context) {
+        SSL_CTX_free(_context);
+    }
+    
    NSZoneFree(NULL,_stableBuffer);
+  [_readBuffer release];
+    
    [super dealloc];
 }
 
