@@ -194,8 +194,12 @@ static const unichar *Win32ClassNameForStyleMask(unsigned styleMask,bool hasShad
 
    SetProp(_handle,"Win32Window",self);
 
+    // We'll disable asking for OpenGL support for now
+    // We don't need it and it might be related to some crash we have on that call, because of some buggy ATI driver
+    // Let's see if that helps
+#if 0
    [self setupPixelFormat];
-
+#endif
     HMENU systemMenu;
     
 	if ((systemMenu = GetSystemMenu(_handle, FALSE)) != NULL) {
