@@ -350,7 +350,9 @@ static inline void byteZero(void *vsrc,size_t size){
 -(BOOL)setSSLProperties:(CFDictionaryRef )sslProperties {
 
    if(_sslHandler==nil){
+#ifdef DEBUG
        NSLog(@"DEBUG: creating an openssl handler with the following properties: %@", sslProperties);
+#endif
     _sslHandler=[[NSClassFromString(@"CFSSLHandler_openssl") alloc] initWithProperties:sslProperties];
        if (_sslHandler == nil) {
            NSLog(@"ERROR: unable to create the openssl handler");

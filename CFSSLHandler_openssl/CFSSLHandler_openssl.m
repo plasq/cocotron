@@ -38,7 +38,6 @@ static threadid_func(CRYPTO_THREADID *id){
    if(self==[CFSSLHandler_openssl class]){
     pthread_mutex_lock(&initLock);
     CRYPTO_malloc_init();
-    NSCLog("DEBUG: calling SSL_library_init()");
     SSL_load_error_strings();
     ERR_load_BIO_strings();
     OpenSSL_add_all_algorithms();
