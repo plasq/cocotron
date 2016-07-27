@@ -782,8 +782,9 @@ static BOOL _NSCreateDirectory(NSString *path,NSError **errorp)
    }
    if (SetCurrentDirectoryW([self fileSystemRepresentationWithPathW:path]))
     return YES;
-   Win32Assert("SetCurrentDirectory");
-
+    
+    NSLog(@"SetCurrentDirectoryW failed for path: '%@' with error: %d", path, GetLastError());
+    
    return NO;
 }
 
