@@ -2417,6 +2417,15 @@ NSString * const NSWindowDidAnimateNotification=@"NSWindowDidAnimateNotification
 }
 
 -(void)zoom:sender {
+    
+    // Platforms can have special commands to maximize a window - so defer
+    // to that if it is implemented. Users get unhappy is maximize is emulated
+    // and not supported natively.
+    if ([[self platformWindow] respondsToSelector: @selector(maximize)]) {
+        [[self platformWindow] maximize];
+        return;
+    }
+    
 	NSRect zoomedFrame = [self zoomedFrame];
 	if (NSEqualRects( _frame, zoomedFrame )) zoomedFrame = _savedFrame;
 	

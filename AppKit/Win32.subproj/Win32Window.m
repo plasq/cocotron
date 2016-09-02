@@ -522,6 +522,10 @@ static const unichar *Win32ClassNameForStyleMask(unsigned styleMask,bool hasShad
    SetCapture(_handle);
 }
 
+-(void)maximize {
+    ShowWindow(_handle,SW_MAXIMIZE);
+}
+
 -(void)miniaturize {
     _isMiniaturized=YES;
     ShowWindow(_handle,SW_MINIMIZE);

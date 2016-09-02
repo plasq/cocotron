@@ -108,6 +108,12 @@ typedef enum {
 
 @end
 
+@interface CGWindow (OptionalAPI)
+
+- (void)maximize;
+
+@end
+
 CGRect CGInsetRectForNativeWindowBorder(CGRect frame,unsigned styleMask);
 CGRect CGOutsetRectForNativeWindowBorder(CGRect frame,unsigned styleMask);
 
