@@ -131,7 +131,7 @@ const char * const *NSProcessInfoArgv=NULL;
 	switch (systemVersion) {
         case 100:
             return [NSString stringWithFormat: @"Windows 10 %@", servicePack];
-        case -100
+        case -100:
             return [NSString stringWithFormat: @"Windows Server 2016 %@", servicePack];
         case 63:
             return [NSString stringWithFormat: @"Windows 8.1 %@", servicePack];
