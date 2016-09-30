@@ -102,17 +102,9 @@ static DWORD WINAPI runWaitCursor(LPVOID arg){
 #ifndef FR_PRIVATE
 #define FR_PRIVATE 0x10
 #endif
-    HANDLE library=LoadLibrary("GDI32");
-    typedef WINGDIAPI int WINAPI (*ftype)(LPCWSTR,DWORD,PVOID);
-    ftype  function=(ftype)GetProcAddress(library,"AddFontResourceExW");
-    if(function==NULL) {
-        NSLog(@"GetProcAddress(\"GDI32\",\"AddFontResourceExW\") failed");
-        return;
-    }
-
     for(NSString *path in paths){
         const uint16_t *rep=[path fileSystemRepresentationW];
-        if(function(rep,FR_PRIVATE,0)==0){
+        if(AddFontResourceExW(rep,FR_PRIVATE,0)==0){
             NSLog(@"AddFontResourceExW failed for %@",path);
         }
     }
