@@ -48,7 +48,6 @@ export RANLIB=$(echo $BASEDIR/gcc-$gccVersion/bin/*ranlib)
 export TARGET=$($GCC -dumpmachine)
 
 
-./Configure mingw no-shared --cross-compile-prefix=i386-mingw32msvc- --prefix=${PREFIX}
-#./Configure mingw shared --cross-compile-prefix=i386-mingw32msvc- --prefix=${PREFIX}
+./Configure mingw no-shared --cross-compile-prefix=/Developer/Cocotron/1.0/Windows/i386/gcc-4.3.1/bin/i386-mingw32msvc- --prefix=${PREFIX}
 
 make && make install
