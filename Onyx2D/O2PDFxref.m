@@ -147,7 +147,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    int      i,count=[_entriesInOrder count];
    
    [encoder appendCString:"xref\n"];
-   [encoder appendFormat:@"%d %d\n",1,count];
+    // "The first entry in the table (object number 0) is always free and has a generation number of 65,535"
+   [encoder appendFormat:@"%d %d\n",0,count+1];
+    [encoder appendFormat:@"%010d %05d f \n",0,65535];
    for(i=0;i<count;i++){
     O2PDFxrefEntry *entry=[_entriesInOrder objectAtIndex:i];
     

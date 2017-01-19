@@ -55,13 +55,23 @@ const NSString *kO2PDFContextTitle=@"kO2PDFContextTitle";
    [_xref setTrailer:[O2PDFDictionary pdfDictionary]];
    
    [self appendCString:"%PDF-1.3\n"];
-   
-   _info=[[O2PDFDictionary pdfDictionary] retain];
+   /*
+    "Note: If a PDF file contains binary data, as most do (see Section 3.1, “Lexical Con- ventions”), it is recommended 
+    that the header line be immediately followed by a comment line containing at least four binary characters—that is,
+    characters whose codes are 128 or greater. This ensures proper behavior of file transfer applications that inspect
+    data near the beginning of a file to determine whether to treat the file’s contents as text or as binary"
+   */
+    [self appendFormat:@"%%%c%c%c%c\n", 199, 248, 231, 242];
+
+    _info=[[O2PDFDictionary pdfDictionary] retain];
    [_info setObjectForKey:"Author" value:[O2PDFString pdfObjectWithString:NSFullUserName()]];
    [_info setObjectForKey:"Creator" value:[O2PDFString pdfObjectWithString:[[NSProcessInfo processInfo] processName]]];
    [_info setObjectForKey:"Producer" value:[O2PDFString pdfObjectWithCString:"THE COCOTRON http://www.cocotron.org O2PDFContext"]];
-   [[_xref trailer] setObjectForKey:"Info" value:_info];
-   
+
+    // "(Optional; must be an indirect reference)"
+    O2PDFObject *info = [self referenceForObject:_info];
+    [[_xref trailer] setObjectForKey:"Info" value:info];
+    
    _catalog=[[O2PDFDictionary pdfDictionary] retain];
    [[_xref trailer] setObjectForKey:"Root" value:_catalog];
    
@@ -605,7 +615,7 @@ const NSString *kO2PDFContextTitle=@"kO2PDFContextTitle";
 			
 			[self appendFormat:@"%d %d obj\n",[entry number],[entry generation]];
 			[object encodeWithPDFContext:self];
-			[self appendFormat:@"endobj\n"];
+			[self appendFormat:@"\nendobj\n"];
 		}
 	}
 	[_indirectObjects removeAllObjects];
@@ -626,7 +636,7 @@ const NSString *kO2PDFContextTitle=@"kO2PDFContextTitle";
 				
 				[self appendFormat:@"%d %d obj\n",[entry number],[entry generation]];
 				[object encodeWithPDFContext:self];
-				[self appendFormat:@"endobj\n"];
+				[self appendFormat:@"\nendobj\n"];
 				
 				// We're done with this object
 				NSMapRemove(_objectToRef,object);
@@ -639,8 +649,8 @@ const NSString *kO2PDFContextTitle=@"kO2PDFContextTitle";
    O2PDFInteger pageCount=0;
    
    [_contentStreamStack removeLastObject];
-      
-   [_kids addObject:_page];
+    // "(Required) An array of indirect references to the immediate children of this node. The children may be page objects or other page tree nodes"
+   [_kids addObject:[self referenceForObject:_page]];
    
    [_pages getIntegerForKey:"Count" value:&pageCount];
    pageCount++;
