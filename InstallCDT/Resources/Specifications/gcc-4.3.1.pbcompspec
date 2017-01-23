@@ -46,52 +46,161 @@
             CommandLineArgs = ( "-fconstant-string-class=NSConstantString" );
             Category = CodeGeneration;
 	},
-        /* overrides */
-        {   Name = arch;
-            CommandLineArgs = ( );
+{   Name = GCC_ENABLE_OBJC_PERIOD_SYMBOLS;
+Type = bool;
+DefaultValue = NO;
+CommandLineArgs = { YES = (-fobjc-period-symbols); NO = (); };
+Category = CodeGeneration;
+},
+/* overrides */
+{   Name = arch;
+CommandLineArgs = ( );
 /* despite overriding arch here, the link command still generates it, so we have to implement it in the compiler too */
-        },
-        {   Name = USE_HEADERMAP;
-            Type = bool;
-            DefaultValue = NO;
-        },
-        {   Name = PREBINDING; /* this override doesn't work */
-            Type = bool;
-            DefaultValue = NO;
-        },
-        {   Name = GCC_PREFIX_HEADER; /* this override doesn't work */
-            CommandLineArgs = ( );
-        },    
-         {   Name = GCC_PRECOMPILE_PREFIX_HEADER; /* this override doesn't work */
-            Type = bool;
-            DefaultValue = NO;
-        },
-       {   Name = GCC_ENABLE_PASCAL_STRINGS;
-            Type = bool;
-            DefaultValue = NO;
-            CommandLineArgs = { YES = (-fpascal-strings); NO = (); };
-            Category = Language;
-        },
-        {   Name =  GCC_CW_ASM_SYNTAX;
-            Type = bool;
-            DefaultValue = NO;
-            CommandLineArgs = { YES = (-fasm-blocks); NO = (); };
-            AppearsAfter = GCC_ALTIVEC_EXTENSIONS;
-            Category = Language;
-        },
-        {   Name = GCC_MODEL_TUNING;
-            Type = enum;
-            AllowedValues = ("");
-            DefaultValue = "";
-            CommandLineArgs = { "" = (); "<<otherwise>>" = (""); };
-            Architectures = ();
-            Category = CodeGeneration;
-        },
-        {   Name = WARNING_CFLAGS;
-            CommandLineArgs = ( );
-        },
+},
+/* overrides */
+{   Name = CLANG_WARN_OBJC_ROOT_CLASS;
+Type = string;
+DefaultValue = "";
+CommandLineArgs = ( );
+/* despite overriding arch here, the link command still generates it, so we have to implement it in the compiler too */
+},
 
-		);
+{
+Name = "CLANG_WARN_SUSPICIOUS_MOVE";
+Type = Boolean;
+DefaultValue = NO;
+CommandLineArgs = ();
+FileTypes = (
+"sourcecode.cpp.cpp",
+"sourcecode.cpp.objcpp",
+);
+Category = WarningsCXX;
+CommonOption = NO;
+},
 
-	}
+{
+Name = "CLANG_COLOR_DIAGNOSTICS";
+Type = Boolean;
+DefaultValue = "$(COLOR_DIAGNOSTICS)";
+CommandLineArgs = ();
+},
+
+{
+Name = "LLVM_LTO";
+Type = Enumeration;
+Values = (
+YES,
+YES_THIN,
+NO,
+);
+DefaultValue = NO;
+CommandLineArgs = ();
+AdditionalLinkerArgs = ();
+Category = CodeGeneration;
+},
+
+{
+Name = "CLANG_WARN_INFINITE_RECURSION";
+Type = Boolean;
+DefaultValue = NO;
+CommandLineArgs = ();
+Category = Warnings;
+CommonOption = NO;
+},
+{   Name = USE_HEADERMAP;
+Type = bool;
+DefaultValue = NO;
+},
+{   Name = PREBINDING; /* this override doesn't work */
+Type = bool;
+DefaultValue = NO;
+},
+{   Name = GCC_PREFIX_HEADER; /* this override doesn't work */
+CommandLineArgs = ( );
+},
+{   Name = GCC_PRECOMPILE_PREFIX_HEADER; /* this override doesn't work */
+Type = bool;
+DefaultValue = NO;
+},
+{   Name = GCC_ENABLE_PASCAL_STRINGS;
+Type = bool;
+DefaultValue = NO;
+CommandLineArgs = { YES = (-fpascal-strings); NO = (); };
+Category = Language;
+},
+{   Name =  GCC_CW_ASM_SYNTAX;
+Type = bool;
+DefaultValue = NO;
+CommandLineArgs = { YES = (-fasm-blocks); NO = (); };
+AppearsAfter = GCC_ALTIVEC_EXTENSIONS;
+Category = Language;
+},
+{   Name = GCC_MODEL_TUNING;
+Type = enum;
+AllowedValues = ("");
+DefaultValue = "";
+CommandLineArgs = { "" = (); "<<otherwise>>" = (""); };
+Architectures = ();
+Category = CodeGeneration;
+},
+{   Name = WARNING_CFLAGS;
+CommandLineArgs = ( );
+},
+{   Name = CLANG_WARN_BOOL_CONVERSION;
+CommandLineArgs = ( );
+},
+{   Name = CLANG_WARN_CONSTANT_CONVERSION;
+CommandLineArgs = ( );
+},
+{   Name = GCC_WARN_64_TO_32_BIT_CONVERSION;
+CommandLineArgs = ( );
+},
+{   Name = CLANG_WARN_ENUM_CONVERSION;
+CommandLineArgs = ( );
+},
+{   Name = CLANG_WARN_INT_CONVERSION;
+CommandLineArgs = ( );
+},
+{   Name = CLANG_WARN__DUPLICATE_METHOD_MATCH;
+CommandLineArgs = ( );
+},
+{   Name = CLANG_WARN_OBJC_IMPLICIT_ATOMIC_PROPERTIES;
+CommandLineArgs = ( );
+},
+{   Name = GCC_WARN_FOUR_CHARACTER_CONSTANTS;
+CommandLineArgs = ( );
+},
+{   Name = GCC_WARN_ABOUT_MISSING_PROTOTYPES;
+CommandLineArgs = ( );
+},
+{   Name = GCC_WARN_ABOUT_MISSING_NEWLINE;
+CommandLineArgs = ( );
+},
+{   Name = CLANG_WARN_OBJC_REPEATED_USE_OF_WEAK;
+CommandLineArgs = ( );
+},
+{   Name = CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS;
+CommandLineArgs = ( );
+},
+{   Name = CLANG_WARN_OBJC_RECEIVER_WEAK;
+CommandLineArgs = ( );
+},
+{   Name = CLANG_MACRO_BACKTRACE_LIMIT;
+CommandLineArgs = ( );
+},
+{   Name = MACOSX_DEPLOYMENT_TARGET;
+CommandLineArgs = ( );
+},
+{   Name = print_note_include_stack;
+CommandLineArgs = ( );
+},
+{   Name = CLANG_WARN__EXIT_TIME_DESTRUCTORS;
+CommandLineArgs = ( );
+},
+
+{   Name = CLANG_WARN_CXX0X_EXTENSIONS;
+CommandLineArgs = ( );
+},
+);
+},
 )
