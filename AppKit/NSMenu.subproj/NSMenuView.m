@@ -558,7 +558,15 @@ const float kMouseMovementThreshold = .001f;
    NSMenuItem *item;
 
    [[self window] setAcceptsMouseMovedEvents:YES];
-   item=[self trackForEvent:event];
+    
+    // Menu creations methods need the current context to be the window one so they can get the current theme
+    NSGraphicsContext *currentContext = [[[NSGraphicsContext currentContext] retain] autorelease];
+    [NSGraphicsContext setCurrentContext: [[self window] graphicsContext]];
+    
+    item=[self trackForEvent:event];
+    
+    [NSGraphicsContext setCurrentContext:currentContext];
+    
    [[self window] setAcceptsMouseMovedEvents:didAccept];
    
    if(item!=nil)

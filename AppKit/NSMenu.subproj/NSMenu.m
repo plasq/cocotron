@@ -20,6 +20,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 +(void)popUpContextMenu:(NSMenu *)menu withEvent:(NSEvent *)event forView:(NSView *)view {
    [menu update];
    if([[menu itemArray] count]>0){
+       
+    // Menu creations methods need the current context to be the window one so they can get the current theme
+    NSGraphicsContext *currentContext = [[[NSGraphicsContext currentContext] retain] autorelease];
+    [NSGraphicsContext setCurrentContext: [[view window] graphicsContext]];
+       
+
     NSPoint       point=[event locationInWindow];
     NSWindow     *window=[event window];
     NSMenuWindow *menuWindow=[[NSMenuWindow alloc] initWithMenu:menu];
@@ -33,6 +39,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     item=[menuView trackForEvent:event];
  
     [menuWindow close];
+
+    [NSGraphicsContext setCurrentContext: currentContext];
 
     if(item!=nil)
      [NSApp sendAction:[item action] to:[item target] from:item];

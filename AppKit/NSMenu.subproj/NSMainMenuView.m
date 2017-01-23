@@ -316,12 +316,19 @@ static void drawSunkenBorder(NSRect rect){
 -(NSMenuView *)viewAtSelectedIndexPositionOnScreen:(NSScreen *)screen {
    NSArray *items=[self visibleItemArray];
 
+   // Menu creations methods need the current context to be the window one so they can get the current theme
+   NSGraphicsContext *currentContext = [[[NSGraphicsContext currentContext] retain] autorelease];
+   [NSGraphicsContext setCurrentContext: [[self window] graphicsContext]];
+
    if(_selectedItemIndex==[items count]){
     NSMenuWindow *branch=[[NSMenuWindow alloc] initWithMenu:[self menu] overflowAtIndex:[self overflowIndex]];
 
     [self positionBranchForSelectedItem:branch screen:screen];
 
     [branch orderFront:nil];
+       
+    [NSGraphicsContext setCurrentContext: currentContext];
+
     return [branch menuView];
    }
 
@@ -335,10 +342,14 @@ static void drawSunkenBorder(NSRect rect){
       [self positionBranchForSelectedItem:branch screen:screen];
 
       [branch orderFront:nil];
+         
+      [NSGraphicsContext setCurrentContext: currentContext];
+         
       return [branch menuView];
      }
     }
    }
+   [NSGraphicsContext setCurrentContext: currentContext];
    return nil;
 }
 
