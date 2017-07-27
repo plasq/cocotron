@@ -586,7 +586,7 @@ static HFONT Win32FontHandleWithName(NSString *name,int unitsPerEm){
             NSMutableCharacterSet *set = [[NSMutableCharacterSet alloc] init];
             WCRANGE *wcrange = glyphsets->ranges;
 #ifdef DEBUGGDIFONT
-            NSLog(@"%@ charset has %d ranges", (int)glyphsets->cRanges);
+            NSLog(@"%@ charset has %d ranges", _name,  (int)glyphsets->cRanges);
 #endif
 
             for (int i = 0; i < glyphsets->cRanges; ++i, ++wcrange) {
