@@ -6,6 +6,9 @@
 #import <Onyx2D/O2Font_freetype.h>
 #include <CoreFoundation/CoreFoundation.h>
 
+// Comment that to disable debug logging
+#define DEBUGGDIFONT 1
+
 O2FontRef O2FontCreateWithFontName_platform(NSString *name) {
    return [[O2Font_gdi alloc] initWithFontName:name];
 }
@@ -550,33 +553,57 @@ static HFONT Win32FontHandleWithName(NSString *name,int unitsPerEm){
 
 -(NSCharacterSet *)coveredCharacterSet {
     if (_coveredCharSet == nil) {
+#ifdef DEBUGGDIFONT
+        NSLog(@"Building coveredCharacterSet for %@", _name);
+#endif
+        
         HDC      dc=GetDC(NULL);
-
+        if (dc == NULL) {
+            NSLog(@"%@:coveredCharacterSet NULL dc", _name);
+            return NULL;
+        }
         // Create our Windows font
         HFONT font=Win32FontHandleWithName(_name,_unitsPerEm);
         SelectObject(dc,font);
         
         GLYPHSET *glyphsets;
         
+#ifdef DEBUGGDIFONT
+        NSLog(@"Getting unicode ranges size for %@", _name);
+#endif
         // Get the unicode ranges from the font
         DWORD size = GetFontUnicodeRanges(dc, NULL);
         glyphsets = (GLYPHSET *)malloc(size);
-        GetFontUnicodeRanges(dc, glyphsets);
-        
-        // Create the NSCharacterSet from the GLYPHSET
-        NSMutableCharacterSet *set = [[NSMutableCharacterSet alloc] init];
-        WCRANGE *wcrange = glyphsets->ranges;
-        for (int i = 0; i < glyphsets->cRanges; ++i, ++wcrange) {
-            NSUInteger location = wcrange->wcLow;
-            // 1 = GS_8BIT_INDICES meaning the indices are 8 bits
-            if (glyphsets->flAccel & 1) {
-                location %= 0xff;
+        if (glyphsets == NULL) {
+            NSLog(@"Unable to allocate glyphset for font %@ (size=%d)", _name, (int)size);
+        } else {
+#ifdef DEBUGGDIFONT
+            NSLog(@"Getting unicode ranges for %@ - size = %d", _name, (int)size);
+#endif
+            GetFontUnicodeRanges(dc, glyphsets);
+            
+            // Create the NSCharacterSet from the GLYPHSET
+            NSMutableCharacterSet *set = [[NSMutableCharacterSet alloc] init];
+            WCRANGE *wcrange = glyphsets->ranges;
+#ifdef DEBUGGDIFONT
+            NSLog(@"%@ charset has %d ranges", (int)glyphsets->cRanges);
+#endif
+
+            for (int i = 0; i < glyphsets->cRanges; ++i, ++wcrange) {
+                NSUInteger location = wcrange->wcLow;
+                // 1 = GS_8BIT_INDICES meaning the indices are 8 bits
+                if (glyphsets->flAccel & 1) {
+                    location %= 0xff;
+                }
+                NSUInteger length = wcrange->cGlyphs;
+                NSRange range = NSMakeRange(location, length);
+                [set addCharactersInRange: range];
             }
-            NSUInteger length = wcrange->cGlyphs;
-            NSRange range = NSMakeRange(location, length);
-            [set addCharactersInRange: range];
+#ifdef DEBUGGDIFONT
+            NSLog(@"Done getting unicode ranges for %@ - size = %d", _name, (int)size);
+#endif
+            _coveredCharSet = set;
         }
-        _coveredCharSet = set;
         
         free(glyphsets);
         
