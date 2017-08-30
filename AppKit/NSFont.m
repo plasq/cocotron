@@ -201,11 +201,20 @@ static NSLock *_cacheLock=nil;
         size=CTFontGetSize(ctFont);
         
         result=[NSFont fontWithName:name size:size];
+        if (result == nil) {
+            NSLog(@"Couldn't create a font with name '%@' of size %f (UI type : %d - ctFont : %@", name, size, type, ctFont);
+        }
         
         [ctFont release];
         [name release];
-    } else {
+    }
+    if (result == nil) {
         result = [NSFont fontWithName:[O2Font postscriptNameForDisplayName:fallbackName] size:size];
+        if (result) {
+            NSLog(@"Couldn't create a font for UI type : %d - falling back to '%@'", type, fallbackName);
+        } else {
+            NSLog(@"Couldn't create a font for UI type : %d and unable to fallback to '%@' ", type, fallbackName);
+        }
     }
     O2FontLog(@"asked for type: %d got font: %@", type, result);
     return result;

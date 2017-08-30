@@ -7,7 +7,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 
 // Comment that to disable debug logging
-#define DEBUGGDIFONT 1
+//#define DEBUGGDIFONT 1
 
 O2FontRef O2FontCreateWithFontName_platform(NSString *name) {
    return [[O2Font_gdi alloc] initWithFontName:name];
@@ -573,40 +573,43 @@ static HFONT Win32FontHandleWithName(NSString *name,int unitsPerEm){
 #endif
         // Get the unicode ranges from the font
         DWORD size = GetFontUnicodeRanges(dc, NULL);
-        glyphsets = (GLYPHSET *)malloc(size);
-        if (glyphsets == NULL) {
-            NSLog(@"Unable to allocate glyphset for font %@ (size=%d)", _name, (int)size);
+        if (size == 0) {
+            NSLog(@"Can't get unicode range table size for font '%@'", _name);
         } else {
+            glyphsets = (GLYPHSET *)malloc(size);
+            if (glyphsets == NULL) {
+                NSLog(@"Unable to allocate glyphset for font %@ (size=%d)", _name, (int)size);
+            } else {
 #ifdef DEBUGGDIFONT
-            NSLog(@"Getting unicode ranges for %@ - size = %d", _name, (int)size);
+                NSLog(@"Getting unicode ranges for %@ - size = %d", _name, (int)size);
 #endif
-            GetFontUnicodeRanges(dc, glyphsets);
-            
-            // Create the NSCharacterSet from the GLYPHSET
-            NSMutableCharacterSet *set = [[NSMutableCharacterSet alloc] init];
-            WCRANGE *wcrange = glyphsets->ranges;
+                GetFontUnicodeRanges(dc, glyphsets);
+                
+                // Create the NSCharacterSet from the GLYPHSET
+                NSMutableCharacterSet *set = [[NSMutableCharacterSet alloc] init];
+                WCRANGE *wcrange = glyphsets->ranges;
 #ifdef DEBUGGDIFONT
-            NSLog(@"%@ charset has %d ranges", _name,  (int)glyphsets->cRanges);
+                NSLog(@"%@ charset has %d ranges", _name,  (int)glyphsets->cRanges);
 #endif
-
-            for (int i = 0; i < glyphsets->cRanges; ++i, ++wcrange) {
-                NSUInteger location = wcrange->wcLow;
-                // 1 = GS_8BIT_INDICES meaning the indices are 8 bits
-                if (glyphsets->flAccel & 1) {
-                    location %= 0xff;
+                
+                for (int i = 0; i < glyphsets->cRanges; ++i, ++wcrange) {
+                    NSUInteger location = wcrange->wcLow;
+                    // 1 = GS_8BIT_INDICES meaning the indices are 8 bits
+                    if (glyphsets->flAccel & 1) {
+                        location %= 0xff;
+                    }
+                    NSUInteger length = wcrange->cGlyphs;
+                    NSRange range = NSMakeRange(location, length);
+                    [set addCharactersInRange: range];
                 }
-                NSUInteger length = wcrange->cGlyphs;
-                NSRange range = NSMakeRange(location, length);
-                [set addCharactersInRange: range];
-            }
 #ifdef DEBUGGDIFONT
-            NSLog(@"Done getting unicode ranges for %@ - size = %d", _name, (int)size);
+                NSLog(@"Done getting unicode ranges for %@ - size = %d", _name, (int)size);
 #endif
-            _coveredCharSet = set;
+                _coveredCharSet = set;
+            }
+            
+            free(glyphsets);
         }
-        
-        free(glyphsets);
-        
         DeleteObject(font);
         ReleaseDC(NULL,dc);
     }
