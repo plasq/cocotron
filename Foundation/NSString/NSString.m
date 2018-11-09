@@ -538,8 +538,9 @@ static NSComparisonResult compareWithOptions(NSString *self,NSString *other,NSSt
 }
 
 -(NSComparisonResult)compare:(NSString *)other options:(NSStringCompareOptions)options range:(NSRange)range locale:(NSLocale *)locale {
-   NSUnimplementedMethod();
-   return 0;
+    // FIX - Ignore the locale - not exact but better than nothing
+    NSUnimplementedMethod();
+    return compareWithOptions(self,other,options,range);
 }
 
 -(NSComparisonResult)compare:(NSString *)other options:(NSStringCompareOptions)options range:(NSRange)range {
@@ -560,12 +561,14 @@ static NSComparisonResult compareWithOptions(NSString *self,NSString *other,NSSt
 }
 
 -(NSComparisonResult)localizedCompare:(NSString *)other {
-   NSUnimplementedMethod();
-   return 0;
+    // FIX - Default to compare - not exact but better than nothing
+    NSUnimplementedMethod();
+    return [self compare:other];
 }
 -(NSComparisonResult)localizedCaseInsensitiveCompare:(NSString *)other {
-   NSUnimplementedMethod();
-   return 0;
+    // FIX - Default to compare - not exact but better than nothing
+    NSUnimplementedMethod();
+    return [self caseInsensitiveCompare:other];
 }
 
 -(NSUInteger)hash {
@@ -1369,7 +1372,7 @@ static inline void reverseString(unichar *buf, NSUInteger len) {
 
 -(NSString *)stringByFoldingWithOptions:(NSStringCompareOptions)options locale:(NSLocale *)locale {
    NSUnimplementedMethod();
-   return 0;
+   return self;
 }
 
 -(NSRange)rangeOfComposedCharacterSequenceAtIndex:(NSUInteger)index {
@@ -1384,22 +1387,22 @@ static inline void reverseString(unichar *buf, NSUInteger len) {
 
 -(NSString *)precomposedStringWithCanonicalMapping {
    NSUnimplementedMethod();
-   return 0;
+   return self;
 }
 
 -(NSString *)decomposedStringWithCanonicalMapping {
    NSUnimplementedMethod();
-   return 0;
+    return self;
 }
 
 -(NSString *)precomposedStringWithCompatibilityMapping {
    NSUnimplementedMethod();
-   return 0;
+    return self;
 }
 
 -(NSString *)decomposedStringWithCompatibilityMapping {
    NSUnimplementedMethod();
-   return 0;
+    return self;
 }
 
 -(NSString *)description {

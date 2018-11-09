@@ -29,8 +29,8 @@ static inline void _NSUnimplementedFunction(const char *function,const char *fil
   _NSInvalidAbstractInvocation(_cmd,self,__FILE__,__LINE__)
 
 #define NSUnimplementedMethod() \
- _NSUnimplementedMethod(_cmd,self,__FILE__,__LINE__)
+ do { static int logged = 0; if (logged == 0) {logged = 1;_NSUnimplementedMethod(_cmd,self,__FILE__,__LINE__); }} while (0)
 
 #define NSUnimplementedFunction() \
- _NSUnimplementedFunction(__PRETTY_FUNCTION__,__FILE__,__LINE__)
+ do { static int logged = 0; if (logged == 0) {logged = 1;_NSUnimplementedFunction(__PRETTY_FUNCTION__,__FILE__,__LINE__); }} while (0)
 
