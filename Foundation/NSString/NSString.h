@@ -121,6 +121,7 @@ FOUNDATION_EXPORT const NSUInteger NSMaximumStringLength;
 -(NSComparisonResult)caseInsensitiveCompare:(NSString *)other;
 -(NSComparisonResult)localizedCompare:(NSString *)other;
 -(NSComparisonResult)localizedCaseInsensitiveCompare:(NSString *)other;
+-(NSComparisonResult)localizedStandardCompare:(NSString *)other;
 
 -(BOOL)isEqualToString:(NSString *)string;
 

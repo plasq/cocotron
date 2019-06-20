@@ -571,6 +571,13 @@ static NSComparisonResult compareWithOptions(NSString *self,NSString *other,NSSt
     return [self caseInsensitiveCompare:other];
 }
 
+- (NSComparisonResult)localizedStandardCompare:(NSString *)other 
+{
+   // FIX - the "localized" part is ignored
+   return compareWithOptions(self,other,NSCaseInsensitiveSearch|NSNumericSearch,NSMakeRange(0,[self length]));
+}
+
+
 -(NSUInteger)hash {
    NSRange  range={0,[self length]};
    unichar  unicode[NSHashStringLength];
