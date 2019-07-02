@@ -139,7 +139,7 @@ NSMutableArray *NSCurrentFocusStack() {
 +(NSGraphicsContext *)currentContext {
    NSGraphicsContext   *current=_currentContext();
 
-   return current;
+    return [[current retain] autorelease];
 }
 
 +(void)setCurrentContext:(NSGraphicsContext *)context {
