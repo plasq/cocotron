@@ -46,8 +46,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 -(void)dealloc {
    NSZoneFree([self zone],_glyphCache);
-    NSZoneFree([self zone],_characterCache);
-    NSZoneFree([self zone],_bidiLevels);
+   NSZoneFree([self zone],_characterCache);
+   NSZoneFree([self zone],_bidiLevels);
    [_container release];
 
    [_glyphRangesInLine release];
@@ -86,7 +86,7 @@ static void loadGlyphAndCharacterCacheForLocation(NSTypesetter_concrete *self,un
     
 	_scanRect = proposedRect;
 	
-    float    fragmentHeight=_fontDefaultLineHeight;
+    float    fragmentHeight=_wantedFragmentHeight;
 
 	float wantedHeight = MAX(proposedRect.size.height, fragmentHeight);
 	_scanRect.size.height = wantedHeight;
@@ -146,9 +146,10 @@ static void loadGlyphAndCharacterCacheForLocation(NSTypesetter_concrete *self,un
 			// No more room on that line - we will try next one - just reset the scanRect location to the end of the line
 			// so the advanceScanRect logic will continue from the right place
 			_scanRect.origin.x = NSMaxX(_fullLineRect);
-			_scanRect.origin.y = NSMinY(proposedRect);
+            _scanRect.origin.y = NSMinY(proposedRect);
 			_scanRect.size.width = 0;
 			_scanRect.size.height = MAX(proposedRect.size.height, fragmentHeight);
+            
 #if DEBUG_GETLINEFRAGMENTRECT
             NSLog(@"No more room on that line - we will try next one. _scanRect now: %@", NSStringFromRect(_scanRect));
 #endif
@@ -304,6 +305,7 @@ static void loadGlyphAndCharacterCacheForLocation(NSTypesetter_concrete *self,un
 			
             
 			glyphAdvance=_positionOfGlyph(_font,NULL,glyph,_previousGlyph,&isNominal).x;
+
 			if(!isNominal && fragmentRange.length>1){
 #if DEBUG_GETLINEFRAGMENTRECT
                 NSLog(@"found special kerning pair");
@@ -505,11 +507,14 @@ static void loadGlyphAndCharacterCacheForLocation(NSTypesetter_concrete *self,un
 #endif            
 			[_glyphRangesInLine addRange:fragmentRange];
 			_maxAscender=MAX(_maxAscender,_fontAscender);
+            _maxFontLineHeight=MAX(_maxFontLineHeight,_fontDefaultLineHeight);
+
 			[_layoutManager setTextContainer:_container forGlyphRange:fragmentRange];
 			fragmentRect=_scanRect;
 			fragmentRect.size.width=fragmentWidth;
 			[_layoutManager setLineFragmentRect:_scanRect forGlyphRange:fragmentRange usedRect:fragmentRect];
-			[_layoutManager setLocation:_scanRect.origin forStartOfGlyphRange:fragmentRange];
+            CGPoint origin = _scanRect.origin;
+			[_layoutManager setLocation:origin forStartOfGlyphRange:fragmentRange];
 		} else {
 #if DEBUG_GETLINEFRAGMENTRECT
             NSLog(@"no more room for text - bailing");
@@ -648,6 +653,9 @@ static void loadGlyphAndCharacterCacheForLocation(NSTypesetter_concrete *self,un
 
 			usedRect.size.height=backRect.size.height=_scanRect.size.height;
 			location.y+=_maxAscender;
+            if (_currentParagraphStyle.lineHeightMultiple > 0) {
+                location.y+= (_currentParagraphStyle.lineHeightMultiple - 1) * _maxFontLineHeight;
+            }
 			if (_alignment == NSJustifiedTextAlignment) {
 #if DEBUG_GETLINEFRAGMENTRECT
                 NSLog(@"    NSJustifiedTextAlignment");
@@ -722,6 +730,7 @@ static void loadGlyphAndCharacterCacheForLocation(NSTypesetter_concrete *self,un
 		_scanRect.size.width=1e7; // That's what Cocoa is sending
 		_scanRect.size.height=0;
 		_maxAscender=0;
+        _maxFontLineHeight = 0;
 #if DEBUG_GETLINEFRAGMENTRECT
         NSLog(@"advanced to next line, set _scanRect to: %@", NSStringFromRect(_scanRect));
 #endif
@@ -810,6 +819,12 @@ static void loadGlyphAndCharacterCacheForLocation(NSTypesetter_concrete *self,un
     _font=nextFont;
     _fontAscender=ceilf([_font ascender]);
     _fontDefaultLineHeight=ceilf([_font defaultLineHeightForFont]);
+    _wantedFragmentHeight = _fontDefaultLineHeight;
+    if (_currentParagraphStyle.lineHeightMultiple != 0) {
+        _wantedFragmentHeight *= _currentParagraphStyle.lineHeightMultiple;
+        _wantedFragmentHeight = ceilf(_wantedFragmentHeight);
+    }
+
     _positionOfGlyph=(void *)[_font methodForSelector:@selector(positionOfGlyph:precededByGlyph:isNominal:)];
 
     [_font getGlyphs:&spaceGlyph forCharacters:&space length:1];
@@ -822,6 +837,11 @@ static void loadGlyphAndCharacterCacheForLocation(NSTypesetter_concrete *self,un
 #endif
 
     _currentParagraphStyle=[NSParagraphStyle defaultParagraphStyle];
+    _wantedFragmentHeight = _fontDefaultLineHeight;
+    if (_currentParagraphStyle.lineHeightMultiple != 0) {
+        _wantedFragmentHeight *= _currentParagraphStyle.lineHeightMultiple;
+        _wantedFragmentHeight = ceilf(_wantedFragmentHeight);
+    }
    _alignment=[_currentParagraphStyle alignment];
     _currentParagraphBidiLevel = 0;
     if (_bidiLevels) {
@@ -891,7 +911,8 @@ static void loadGlyphAndCharacterCacheForLocation(NSTypesetter_concrete *self,un
    _scanRect.size.width=1e7; // That's what Cocoa is sending
    _scanRect.size.height=0;
    _maxAscender=0;
-	_wordWrapWidth=0;
+   _maxFontLineHeight = 0;
+   _wordWrapWidth=0;
   while(_nextGlyphLocation<_numberOfGlyphs){
 
 #if DEBUG_LAYOUTGLYPHSINLAYOUTMANAGER
@@ -908,7 +929,7 @@ static void loadGlyphAndCharacterCacheForLocation(NSTypesetter_concrete *self,un
 #endif
 		   break;
 	   }
-   }
+  }
 
    if(_font==nil){
     _font=NSFontAttributeInDictionary(nil);
@@ -919,12 +940,19 @@ static void loadGlyphAndCharacterCacheForLocation(NSTypesetter_concrete *self,un
        
     _fontAscender=ceilf([_font ascender]);
     _fontDefaultLineHeight=ceilf([_font defaultLineHeightForFont]);
+    _wantedFragmentHeight = _fontDefaultLineHeight;
     _positionOfGlyph=(void *)[_font methodForSelector:@selector(positionOfGlyph:precededByGlyph:isNominal:)];
    }
+    if (_currentParagraphStyle) {
+        if (_currentParagraphStyle.lineHeightMultiple != 0) {
+            _wantedFragmentHeight *= _currentParagraphStyle.lineHeightMultiple;
+            _wantedFragmentHeight = ceilf(_wantedFragmentHeight);
+        }
+    }
 
 	if (((_paragraphBreak && _nextGlyphLocation>=_numberOfGlyphs) || _numberOfGlyphs == 0)) {
-		NSRect remainingRect; // Ignored for now
-		_scanRect.size.height=MAX(_scanRect.size.height,_fontDefaultLineHeight);
+        NSRect remainingRect; // Ignored for now
+        _scanRect.size.height=MAX(_scanRect.size.height,_wantedFragmentHeight);
         if (_currentParagraphStyle) {
             if (_currentParagraphStyle.maximumLineHeight != 0) {
                 _scanRect.size.height = MIN(_scanRect.size.height, _currentParagraphStyle.maximumLineHeight);
@@ -937,7 +965,8 @@ static void loadGlyphAndCharacterCacheForLocation(NSTypesetter_concrete *self,un
 		[_layoutManager setExtraLineFragmentRect:_scanRect usedRect:usedRect textContainer:_container];
 	} else {
 		[_layoutManager setExtraLineFragmentRect:NSZeroRect	usedRect:NSZeroRect textContainer:_container];
-	}
+    }
+
    _currentParagraphStyle=nil;
    _font=nil;
    _attributes=nil;

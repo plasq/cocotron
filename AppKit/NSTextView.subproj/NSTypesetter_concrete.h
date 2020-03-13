@@ -23,13 +23,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    unichar            *_characterCache;
 
     
-    NSUInteger          _bidiLevelsCapacity;
-    uint8_t             *_bidiLevels;
-    uint8_t             _currentBidiLevel;
-    uint8_t             _currentParagraphBidiLevel;
+   NSUInteger          _bidiLevelsCapacity;
+   uint8_t            *_bidiLevels;
+   uint8_t             _currentBidiLevel;
+   uint8_t             _currentParagraphBidiLevel;
     
-	BOOL				   _paragraphBreak;
-	
+   BOOL                _paragraphBreak;
+    
    NSTextContainer    *_container;
    NSSize              _containerSize;
 
@@ -39,6 +39,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    NSFont             *_font;
    float               _fontAscender;
    float               _fontDefaultLineHeight;
+   float               _wantedFragmentHeight;
    NSPoint           (*_positionOfGlyph)(NSFont *,SEL,NSGlyph,NSGlyph,BOOL *);
    NSTextAlignment     _alignment;
    NSLineBreakMode     _lineBreakMode;
@@ -47,14 +48,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    NSRange             _lineRange;
    NSRangeArray       *_glyphRangesInLine;
    NSGlyph             _previousGlyph;
-	NSRect              _scanRect;
-	NSRect _wordWrapScanRect;
-	NSRect              _fullLineRect;
+   NSRect              _scanRect;
+   NSRect              _wordWrapScanRect;
+   NSRect              _fullLineRect;
    float               _maxAscender;
-	
-	NSRange				_wordWrapRange;
-	float				_wordWrapWidth;
-	NSGlyph				_wordWrapPreviousGlyph;
+   float               _maxFontLineHeight;
+    
+   NSRange             _wordWrapRange;
+   float               _wordWrapWidth;
+   NSGlyph             _wordWrapPreviousGlyph;
 }
 
 @end
