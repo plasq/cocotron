@@ -190,7 +190,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 - (void)setClientView:(NSView *)view
 {
-    [_clientView rulerView:self willSetClientView:view];
+    if ([_clientView respondsToSelector:@selector(rulerView:willSetClientView:)]) {
+        [_clientView rulerView:self willSetClientView:view];
+    }
     [_markers removeAllObjects];
     _clientView = view;
     
