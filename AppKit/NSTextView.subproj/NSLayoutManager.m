@@ -1310,6 +1310,7 @@ static inline void _appendRectToCache(NSLayoutManager *self,NSRect rect){
 }
 
 #define DEBUG_LM_DRAWING 0
+#define DEBUG_LM_FRAGMENT 0
 
 -(void)showPackedGlyphs:(char *)glyphs length:(unsigned)length glyphRange:(NSRange)glyphRange atPoint:(NSPoint)point font:(NSFont *)font color:(NSColor *)color printingAdjustment:(NSSize)printingAdjustment {
 
@@ -1920,6 +1921,16 @@ static inline void _appendRectToCache(NSLayoutManager *self,NSRect rect){
 			point.x += partWidth;
 		}
 	}
+    
+#if DEBUG_LM_FRAGMENT
+    NSRect r = fragment->usedRect;
+    r.origin.x += origin.x;
+    r.origin.y += origin.y;
+    [[NSColor blueColor] set];
+    NSBezierPath *p = [NSBezierPath bezierPathWithRect:r];
+    [p setLineWidth:2];
+    [p stroke];
+#endif
 	// Return the distance travelled relative to the fragment origin (we added these on at the start of this method)
 	float newXOffset = point.x - (origin.x + fragment->location.x);
 	return newXOffset;

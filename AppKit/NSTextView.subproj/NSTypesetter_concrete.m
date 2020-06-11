@@ -306,6 +306,7 @@ static void loadGlyphAndCharacterCacheForLocation(NSTypesetter_concrete *self,un
             
 			glyphAdvance=_positionOfGlyph(_font,NULL,glyph,_previousGlyph,&isNominal).x;
 
+#if 0 // Disabled for now - line breaking code tends to break lines between fragments created for handle the kerning paris
 			if(!isNominal && fragmentRange.length>1){
 #if DEBUG_GETLINEFRAGMENTRECT
                 NSLog(@"found special kerning pair");
@@ -317,6 +318,7 @@ static void loadGlyphAndCharacterCacheForLocation(NSTypesetter_concrete *self,un
 				fragmentExit=YES;
 				break;
 			}
+#endif
             // Get the width of the glyph
 			glyphMaxWidth=_positionOfGlyph(_font,NULL,NSNullGlyph,glyph,&isNominal).x;
 		}
