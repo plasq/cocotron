@@ -1335,6 +1335,9 @@ static void resolveWhitespace(int baselevel, const uint8_t *pcls, uint8_t *pleve
 static unsigned long reorderLevel(int level, uint32_t * pszText, const uint8_t * plevel, unsigned long cch,
                            bool fReverse)
 {
+    if (level > 1000) {
+        return 1; // Force to move on if it seems that we're stuck...
+    }
 	// true as soon as first odd level encountered
 	fReverse = fReverse || odd(level);
     
@@ -1355,6 +1358,10 @@ static unsigned long reorderLevel(int level, uint32_t * pszText, const uint8_t *
 	{
 		reverse(pszText, ich);
 	}
+    if (ich == 0) {
+        ich = 1; // Force to move on if it seems that we're stuck...
+
+    }
 	return ich;
 }
 
