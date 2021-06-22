@@ -828,6 +828,16 @@ int DGifSlurp(GifFileType * GifFile) {
           default:    /* Should be trapped by DGifGetRecordType */
               break;
         }
+        
+        // !!!! plasq change: that might break apps that need to access more than
+        // the GIF first image
+        // We'll stop after reading the first image - that's all we're using anyway and so
+        // that will speed up big animated GIF opening and limit the memory use as the
+        // whole GIF is decoded at opening time
+        if (GifFile->ImageCount > 0) {
+            break;
+        }
+        
     } while (RecordType != TERMINATE_RECORD_TYPE);
 
     /* Just in case the Gif has an extension block without an associated
